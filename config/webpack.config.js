@@ -102,6 +102,11 @@ const splitChunks = {
   }
 }
 
+const externals = {
+  react: 'React',
+  'react-dom': 'ReactDom'
+}
+
 const uuidCharts = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".split("");
 const getGUID = function(len, radix) {
   var chars = uuidCharts,
@@ -616,9 +621,7 @@ module.exports = function (webpackEnv) {
         },
       ].filter(Boolean),
     },
-    externals: {
-
-    },
+    externals: undefined,
     plugins: [
       new HtmlWebpackPlugin(
         Object.assign(
@@ -645,7 +648,7 @@ module.exports = function (webpackEnv) {
             : undefined
         )
       ),
-      new HtmlWebpackTagsPlugin({ tags: ['lib/idm.base.css', 'lib/axios.min.js', 'lib/jquery.min.js', 'lib/lodash.min.js', 'lib/qs.js', 'lib/idm.core.js'], append: false }),
+      new HtmlWebpackTagsPlugin({ tags: ['lib/idm.base.css', 'lib/react.min.js', 'lib/react-dom.min.js', 'lib/axios.min.js', 'lib/jquery.min.js', 'lib/lodash.min.js', 'lib/qs.js', 'lib/idm.core.js'], append: false }),
       // Inlines the webpack runtime script. This script is too small to warrant
       // a network request.
       // https://github.com/facebook/create-react-app/issues/5358
@@ -787,7 +790,7 @@ module.exports = function (webpackEnv) {
           eslintPath: require.resolve('eslint'),
           failOnError: !(isEnvDevelopment && emitErrorsAsWarnings),
           context: paths.appSrc,
-          cache: true,
+          cache: false,
           cacheLocation: path.resolve(
             paths.appNodeModules,
             '.cache/.eslintcache'

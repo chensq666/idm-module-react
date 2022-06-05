@@ -2,16 +2,22 @@ import config from '../../public/static/config.json';
 import React from 'react'
 import ReactDOM from 'react-dom/client';
 
-// import DemoText from '../components/DemoText.js'
-import DemoInput from '../components/DemoInput.js'
 //闭包方法
 (() => {
+    const className = window.IDM && window.IDM.url.queryString("className")
+    // 将全部组件放到一个Map里
+    const requireComponent = require.context('../components', true, /[A-Z]\w+\.(jsx|tsx)$/);
+    const componentsMap = new Map()
+    requireComponent.keys().forEach(fileName => {
+        const componentConfig = requireComponent(fileName)
+        const  componentName= fileName.split('/').pop().replace(/\.\w+$/, '')
+        componentsMap.set(componentName, componentConfig.default || componentConfig)
+      })
     //这里把classId+@+version作为入口方法名（组件的包名）
     var defining = {
     };
     config && config.module.forEach(item => {
         defining[item.classId + "@" + config.version] = function (moduleObject) {
-            
             //把组件定义的属性返回给核心框架
             moduleObject.compositeAttr = item.compositeAttr;
             //把组件定义的组件内属性返回给核心框架(如果有的话)
@@ -22,7 +28,6 @@ import DemoInput from '../components/DemoInput.js'
             if(item.innerComName){
                 moduleObject.innerComName = item.innerComName;
             }
-            
 
             moduleObject.idmProps = function (props) {
                 console.log("实时更新的数据", props)
@@ -53,12 +58,7 @@ import DemoInput from '../components/DemoInput.js'
              *  data:"数据集，内容为：字符串 or 数组 or 对象"
              * }
              */
-            moduleObject.idmSetContextValue = function(object){
-                // vm.$children.length > 0 &&
-                //     vm.$children[0].$refs[vm.componentName] &&
-                //     vm.$children[0].$refs[vm.componentName].setContextValue &&
-                //     vm.$children[0].$refs[vm.componentName].setContextValue(object);
-            }
+            moduleObject.idmSetContextValue = function(object){}
             /**
              * 交互功能：获取需要返回的值，返回格式如下
              * @return {
@@ -66,23 +66,17 @@ import DemoInput from '../components/DemoInput.js'
              *    data:{要返回的值，内容为：字符串 or 数组 or 对象}
              * }
              */
-            moduleObject.idmGetContextValue = function(){
-                // if(vm.$children.length > 0 &&
-                //     vm.$children[0].$refs[vm.componentName] &&
-                //     vm.$children[0].$refs[vm.componentName].getContextValue){
-                //         return vm.$children[0].$refs[vm.componentName].getContextValue();
-                //     }else{
-                //         return null
-                //     }
-            }
-            // console.log("渲染的ID>>>>", moduleObject.id);
+            moduleObject.idmGetContextValue = function(){}
+
+            // 创建根组件
             const AppCallbackComp = () => React.createElement(window[`${process.env.CodeVar}`], moduleObject)
+            // 组件挂在回调
             const appCallback= () => {
                 moduleObject.mountComplete && moduleObject.mountComplete(moduleObject);
             }
             const root = ReactDOM.createRoot(document.getElementById(moduleObject.id));
-            window[`${process.env.CodeVar}`] = DemoInput
             root.render(<AppCallbackComp callback={appCallback()}></AppCallbackComp>)
+            window[`${process.env.CodeVar}`] = componentsMap.get(className)
         }
     })
     Object.keys(defining).forEach(key => {
@@ -90,9 +84,9 @@ import DemoInput from '../components/DemoInput.js'
     });
     //延时
     setTimeout(function(){
-        if(window.IDM&&window.IDM.url.queryString("className")){
+        if(className){
             config && config.module.forEach(item => {
-                if(item.className === window.IDM.url.queryString("className")){
+                if(item.className === className){
                     window[item.classId + "@" + config.version].call(this, {
                         "id": "module_demo"
                     })

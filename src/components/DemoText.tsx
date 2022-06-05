@@ -1,12 +1,15 @@
 import { Component } from 'react'
-import { Button } from 'antd';
-class DemoText extends Component {
+
+interface IState extends ICommonState {
+  propData: any
+}
+class DemoText extends Component<{}, IState> {
   constructor(props) {
       super(props)
       this.state = {
         id: '',
         propData: {
-          htmlTitle: 1
+          htmlTitle: '测试文本'
         },
         ...props,
       }
@@ -14,10 +17,8 @@ class DemoText extends Component {
 
   render() {
     const { id, propData } = this.state
-    return <div idm-ctrl="idm_module" id={id} idm-ctrl-id={id}>
-      <input value={123456}/>
-      <span>{propData.htmlTitle}</span>
-      <Button>123</Button>
+    return <div idm-ctrl="idm_module" id={ id } idm-ctrl-id={ id }>
+      <div>{propData.htmlTitle}</div>
     </div>
   }
 }
