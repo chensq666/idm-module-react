@@ -1,0 +1,22 @@
+{
+    "version": "1.0.0",
+    "lasttime": "2021-04-05 00:36:27",
+    "author": "申龙",
+    "className": "react",
+    "module": [
+        {
+            "classId": "idm.component.react.demoText",
+            "comName": "测试文本",
+            "className": "DemoText",
+            "comType": "common",
+            "comLangue": "react"
+        },
+        {
+            "classId": "idm.component.react.demoInput",
+            "comName": "测试输入框",
+            "className": "DemoInput",
+            "comType": "common",
+            "comLangue": "react"
+        }
+    ]
+}
