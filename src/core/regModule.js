@@ -76,7 +76,7 @@ import ReactDOM from 'react-dom/client';
             }
             const root = ReactDOM.createRoot(document.getElementById(moduleObject.id));
             root.render(<AppCallbackComp callback={appCallback()}></AppCallbackComp>)
-            window[`${process.env.CodeVar}`] = componentsMap.get(className)
+            window[`${process.env.CodeVar}`] = componentsMap.get(moduleObject.className || className)
         }
     })
     Object.keys(defining).forEach(key => {
