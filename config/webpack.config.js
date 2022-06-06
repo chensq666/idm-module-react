@@ -436,29 +436,18 @@ module.exports = function (webpackEnv) {
             },
             {
               test: /\.svg$/,
+              include: paths.iconsPath,
+              exclude: paths.appNodeModules,
               use: [
                 {
-                  loader: require.resolve('@svgr/webpack'),
+                  loader: require.resolve('svg-sprite-loader'),
                   options: {
-                    prettier: false,
-                    svgo: false,
-                    svgoConfig: {
-                      plugins: [{ removeViewBox: false }],
-                    },
-                    titleProp: true,
-                    ref: true,
-                  },
-                },
-                {
-                  loader: require.resolve('file-loader'),
-                  options: {
-                    name: 'static/media/[name].[hash].[ext]',
-                  },
-                },
-              ],
-              issuer: {
-                and: [/\.(ts|tsx|js|jsx|md|mdx)$/],
-              },
+                    symbolId: 'icon-[name]'
+                    //symbolId和use使用的名称对应
+                    //<use xlinkHref={"#icon-" + iconClass} />
+                  }
+                }
+              ]
             },
             // Process application JS with Babel.
             // The preset includes JSX, Flow, TypeScript, and some ESnext features.

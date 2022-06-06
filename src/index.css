@@ -11,3 +11,7 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+/***
+idm 默认引入antd-vue, 样式可以直接使用 tip:注意bug
+*/
+/* @import '~antd/dist/antd.css'; */

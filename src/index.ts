@@ -1,5 +1,6 @@
 import './core/regModule';
 import './index.css';
+import './icons/index'
 import reportWebVitals from './reportWebVitals';
 
 

@@ -1,5 +1,4 @@
 import { Component } from 'react'
-
 interface IState extends ICommonState {
   propData: any
 }

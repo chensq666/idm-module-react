@@ -9,7 +9,7 @@
      "noImplicitAny": false, /**在表达式和声明上有隐含的any类型时报错**/
      "skipLibCheck": true,  /**忽略所有的声明文件的类型检查**/
      "forceConsistentCasingInFileNames": true,   /**禁止对同一个文件的不一致的引用**/
-     "resolveJsonModule": true
+     "resolveJsonModule": true,
   },
-  "include": ["src"] /**指定编译目录**/
+  "include": ["src", "types"] /**指定编译目录**/
 }

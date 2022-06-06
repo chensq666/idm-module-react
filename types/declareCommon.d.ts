@@ -7,6 +7,3 @@ interface Window {
   IDM: any;
 }
 
-declare global {
-  IDM: any;
-}
