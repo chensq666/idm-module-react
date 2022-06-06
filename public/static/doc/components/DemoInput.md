@@ -1,9 +1,9 @@
 # 文本
 这里用来描述组件的具体作用说明，描述内容建议简明扼要。
 ## 组件类名（className）
-IText
+DemoInput
 ## 组件类ID（classId）
-idm.component.react.text
+idm.component.react.input
 ## 组件开发语言（comLangue）
 react
 ## 组件类型（comType）

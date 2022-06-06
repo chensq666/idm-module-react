@@ -18,7 +18,6 @@ import ReactDOM from 'react-dom/client';
     };
     config && config.module.forEach(item => {
         defining[item.classId + "@" + config.version] = function (moduleObject) {
-            
             //把组件定义的属性返回给核心框架
             moduleObject.compositeAttr = item.compositeAttr;
             //把组件定义的组件内属性返回给核心框架(如果有的话)
