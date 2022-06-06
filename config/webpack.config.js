@@ -104,7 +104,7 @@ const splitChunks = {
 
 const externals = {
   react: 'React',
-  'react-dom': 'ReactDom'
+  'react-dom': 'ReactDOM'
 }
 
 const uuidCharts = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".split("");

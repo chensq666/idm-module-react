@@ -25,7 +25,7 @@
                     "layoutType": "inline",
                     "text": "显示标题",
                     "bindKey": "htmlTitle",
-                    "default": true
+                    "default": "页面标题"
                 }
             ]
         }

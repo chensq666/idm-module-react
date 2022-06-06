@@ -13,6 +13,9 @@ class DemoInput extends Component<{}, IState> {
         ...props,
       }
   }
+  propDataWatchHandle(propData){
+    this.setState({ ...this.state, propData })
+  }
   handleInput(e) {
     this.state.propData.htmlTitle = e.target.value
     this.setState(this.state)
