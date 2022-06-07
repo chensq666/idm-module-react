@@ -21,7 +21,7 @@ class DemoInput extends Component<IDMCommonProp, IDMCommonState> {
     const { id } = this.props
     const { propData } = this.state
     const { handleInput } = this
-    return <div idm-ctrl="idm_module" id={id} idm-ctrl-id={id}>
+    return <div idm-ctrl="idm_module" idm-ctrl-id={id}>
       <input value={propData.htmlTitle} onInput={eve => handleInput.call(this, eve)}></input>
       <div>{ propData.htmlTitle }</div>
     </div>
