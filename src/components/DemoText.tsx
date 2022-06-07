@@ -202,8 +202,8 @@ class DemoText extends Component<IDMCommonProp, IState> {
     const { id } = this.props
     const { propData } = this.state
     return <div idm-ctrl="idm_module" idm-ctrl-id={ id }>
-      <h3>{propData.htmlTitle}</h3>
-      <h3>{propData.text}</h3>
+      <div>{propData.htmlTitle}</div>
+      <div>{propData.text}</div>
     </div>
   }
 }
