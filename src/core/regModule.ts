@@ -1,14 +1,13 @@
-import config from '../../public/static/config.json';
-import React, { Component, createRef } from 'react'
-import ReactDOM from 'react-dom/client';
-
+import { createElement, Component, createRef, RefObject } from 'react'
+import { createRoot } from 'react-dom/client';
+import config from '../../public/static/config.json'
 //闭包方法
 (() => {
     const className = window.IDM && window.IDM.url.queryString("className")
     // 将全部组件放到一个Map里
     const requireComponent = require.context('../components', true, /[A-Z]\w+\.(jsx|tsx)$/);
     const componentsMap = new Map()
-    requireComponent.keys().forEach(fileName => {
+    requireComponent.keys().forEach((fileName: any) => {
         const componentConfig = requireComponent(fileName)
         const  componentName= fileName.split('/').pop().replace(/\.\w+$/, '')
         componentsMap.set(componentName, componentConfig.default || componentConfig)
@@ -16,7 +15,7 @@ import ReactDOM from 'react-dom/client';
     //这里把classId+@+version作为入口方法名（组件的包名）
     var defining = {
     };
-    config && config.module.forEach(item => {
+    config && config.module.forEach((item: any) => {
         defining[item.classId + "@" + config.version] = function (moduleObject) {
             //把组件定义的属性返回给核心框架
             moduleObject.compositeAttr = item.compositeAttr;
@@ -29,14 +28,15 @@ import ReactDOM from 'react-dom/client';
                 moduleObject.innerComName = item.innerComName;
             }
 
-            const root = ReactDOM.createRoot(document.getElementById(moduleObject.id));
-            root.render(React.createElement(class extends Component {
+            const root = createRoot(document.getElementById(moduleObject.id) || document.createElement('div'));
+            root.render(createElement(class extends Component {
+                childCom: RefObject<IDMReactComponent>
                 constructor() {
-                    super()
+                    super({})
                     this.childCom = createRef()
                     /**
                      * 更新页面属性
-                     * @param {*} props 
+                     * @param {*} props
                      */
                     moduleObject.idmProps = (props) => {
                         this.childCom?.current?.propDataWatchHandle(props.compositeAttr)
@@ -45,8 +45,8 @@ import ReactDOM from 'react-dom/client';
                      * 接收消息的方法
                      * @param {
                      *  type:"发送消息的时候定义的类型，这里可以自己用来要具体做什么，统一规定的type：linkageResult（组件联动传结果值）、linkageDemand（组件联动传需求值）、linkageReload（联动组件重新加载）
-                             * 、linkageOpenDialog（打开弹窗）、linkageCloseDialog（关闭弹窗）、linkageShowModule（显示组件）、linkageHideModule（隐藏组件）、linkageResetDefaultValue（重置默认值）"
-                                     *  message:{发送的时候传输的消息对象数据}
+                     * 、linkageOpenDialog（打开弹窗）、linkageCloseDialog（关闭弹窗）、linkageShowModule（显示组件）、linkageHideModule（隐藏组件）、linkageResetDefaultValue（重置默认值）"
+                     *  message:{发送的时候传输的消息对象数据}
                      *  messageKey:"消息数据的key值，代表数据类型是什么，常用于表单交互上，比如通过这个key判断是什么数据"
                      *  isAcross:如果为true则代表发送来源是其他页面的组件，默认为false
                      * } object 
@@ -76,7 +76,7 @@ import ReactDOM from 'react-dom/client';
                     moduleObject.mountComplete && moduleObject.mountComplete(moduleObject);
                 }
                 render() {
-                    return React.createElement(componentsMap.get(moduleObject.className || className), {...moduleObject, ref: this.childCom})
+                    return createElement(componentsMap.get(moduleObject.className || className), {...moduleObject, ref: this.childCom})
                 }
             }))
         }
@@ -89,7 +89,7 @@ import ReactDOM from 'react-dom/client';
         if(className){
             config && config.module.forEach(item => {
                 if(item.className === className){
-                    window[item.classId + "@" + config.version].call(this, {
+                    window[item.classId + "@" + config.version]({
                         "id": "module_demo"
                     })
                 }

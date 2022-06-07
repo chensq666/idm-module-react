@@ -141,6 +141,9 @@
     ]
   },
   "devDependencies": {
+    "@types/jquery": "^3.5.14",
+    "@types/lodash": "^4.14.182",
+    "@types/qs": "^6.9.7",
     "@types/react": "^18.0.11",
     "@types/react-dom": "^18.0.5",
     "@types/webpack-env": "^1.17.0",

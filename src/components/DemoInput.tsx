@@ -1,12 +1,8 @@
 import { Component } from 'react'
-interface IState extends ICommonState {
-  propData: any
-}
-class DemoInput extends Component<{}, IState> {
+class DemoInput extends Component<IDMCommonProp, IDMCommonState> {
   constructor(props) {
       super(props)
       this.state = {
-        id: '',
         propData: {
           htmlTitle: '测试输入'
         },
@@ -22,7 +18,8 @@ class DemoInput extends Component<{}, IState> {
   }
 
   render() {
-    const { id, propData } = this.state
+    const { id } = this.props
+    const { propData } = this.state
     const { handleInput } = this
     return <div idm-ctrl="idm_module" id={id} idm-ctrl-id={id}>
       <input value={propData.htmlTitle} onInput={eve => handleInput.call(this, eve)}></input>
