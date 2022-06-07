@@ -36,7 +36,7 @@ import config from '../../public/static/config.json'
                     this.childCom = createRef()
                     this.setState(moduleObject?.props?.compositeAttr)
                     /**
-                     * 更新页面属性
+                     * 编辑属性更新
                      * @param {*} props
                      */
                     moduleObject.idmProps = (props) => {
@@ -75,6 +75,7 @@ import config from '../../public/static/config.json'
                 }
                 componentDidMount() {
                     moduleObject.mountComplete && moduleObject.mountComplete(moduleObject);
+                    // 预览时数据传入
                     const propData = moduleObject?.props?.compositeAttr
                     if(propData) this.childCom?.current?.propDataWatchHandle(propData)
                 }

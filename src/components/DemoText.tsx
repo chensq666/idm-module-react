@@ -7,7 +7,7 @@ class DemoText extends Component<IDMCommonProp, IState> {
       super(props)
       this.state = {
         propData: {
-          htmlTitle: '测试文本'
+          htmlTitle: '页面标题'
         },
         ...props,
       }
@@ -51,7 +51,7 @@ class DemoText extends Component<IDMCommonProp, IState> {
               styleObject[key] = element;
               break;
             case "height":
-              styleObject[key] = element.inputVal + element.selectVal;
+              styleObject[key] = element;
               break;
             case "bgColor":
                 if(element&&element.hex8){
@@ -159,9 +159,7 @@ class DemoText extends Component<IDMCommonProp, IState> {
   propDataWatchHandle(propData){
     const stateObj = { ...this.state, propData }
     this.setState(stateObj)
-    /**
-     * setState是异步更新，把state当参数传进去
-     */
+    // setState是异步，把state当参数传进去，确保数据同步
     this.convertAttrToStyleObject(stateObj)
   }
   /**
