@@ -26,6 +26,13 @@
                     "text": "显示标题",
                     "bindKey": "htmlTitle",
                     "default": "页面标题"
+                },
+                {
+                    "type": "input",
+                    "layoutType": "inline",
+                    "text": "文本",
+                    "bindKey": "text",
+                    "default": "测试文本"
                 }
             ]
         },
@@ -36,12 +43,11 @@
             "helpUrl": "",
             "children": [
                 {
-                    "type": "colorPicker",
+                    "type": "font",
                     "layoutType": "inline",
-                    "text": "背景色",
-                    "bindKey": "bgColor",
-                    "placeholder": "请选择颜色",
-                    "default": {}
+                    "text": "字体设置",
+                    "bindKey": "font",
+                    "placeholder": "请选择颜色"
                 },
                 {
                     "type": "inlineGroup",

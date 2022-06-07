@@ -1,13 +1,14 @@
 import { Component } from 'react'
 interface IState extends IDMCommonState {
-  propData: any
+  text: string
 }
 class DemoText extends Component<IDMCommonProp, IState> {
   constructor(props) {
       super(props)
       this.state = {
         propData: {
-          htmlTitle: '页面标题'
+          htmlTitle: '页面标题',
+          text: '测试文本'
         },
         ...props,
       }
@@ -53,11 +54,18 @@ class DemoText extends Component<IDMCommonProp, IState> {
             case "height":
               styleObject[key] = element;
               break;
-            case "bgColor":
-                if(element&&element.hex8){
-                  styleObject["background-color"]=element.hex8;
-                }
-                break;
+            case "font":
+              styleObject["font-family"] = element.fontFamily;
+              if (element.fontColors.hex8) {
+                styleObject["color"] = element.fontColors.hex8;
+              }
+              styleObject["font-weight"] = element.fontWeight && element.fontWeight.split(" ")[0];
+              styleObject["font-style"] = element.fontStyle;
+              styleObject["font-size"] = element.fontSize + element.fontSizeUnit;
+              styleObject["line-height"] = element.fontLineHeight + (element.fontLineHeightUnit == "-" ? "" : element.fontLineHeightUnit);
+              styleObject["text-align"] = element.fontTextAlign;
+              styleObject["text-decoration"] = element.fontDecoration;
+              break;
             case "box":
               if (element.marginTopVal) {
                 styleObject["margin-top"] = `${element.marginTopVal}`;
@@ -194,7 +202,8 @@ class DemoText extends Component<IDMCommonProp, IState> {
     const { id } = this.props
     const { propData } = this.state
     return <div idm-ctrl="idm_module" idm-ctrl-id={ id }>
-      <div>{propData.htmlTitle}</div>
+      <h3>{propData.htmlTitle}</h3>
+      <h3>{propData.text}</h3>
     </div>
   }
 }

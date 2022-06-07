@@ -4,7 +4,7 @@ class DemoInput extends Component<IDMCommonProp, IDMCommonState> {
       super(props)
       this.state = {
         propData: {
-          htmlTitle: '测试输入'
+          text: '测试输入'
         },
         ...props,
       }
@@ -22,8 +22,8 @@ class DemoInput extends Component<IDMCommonProp, IDMCommonState> {
     const { propData } = this.state
     const { handleInput } = this
     return <div idm-ctrl="idm_module" idm-ctrl-id={id}>
-      <input value={propData.htmlTitle} onInput={eve => handleInput.call(this, eve)}></input>
-      <div>{ propData.htmlTitle }</div>
+      <input value={propData.text} onInput={eve => handleInput.call(this, eve)}></input>
+      <div>{ propData.text }</div>
     </div>
   }
 }
