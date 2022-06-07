@@ -13,7 +13,7 @@ class DemoInput extends Component<IDMCommonProp, IDMCommonState> {
     this.setState({ ...this.state, propData })
   }
   handleInput(e) {
-    this.state.propData.htmlTitle = e.target.value
+    this.state.propData.text = e.target.value
     this.setState(this.state)
   }
 
