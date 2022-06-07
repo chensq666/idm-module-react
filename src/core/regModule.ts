@@ -32,8 +32,9 @@ import config from '../../public/static/config.json'
             root.render(createElement(class extends Component {
                 childCom: RefObject<IDMReactComponent>
                 constructor() {
-                    super({})
+                    super(moduleObject)
                     this.childCom = createRef()
+                    this.setState(moduleObject?.props?.compositeAttr)
                     /**
                      * 更新页面属性
                      * @param {*} props
@@ -74,6 +75,8 @@ import config from '../../public/static/config.json'
                 }
                 componentDidMount() {
                     moduleObject.mountComplete && moduleObject.mountComplete(moduleObject);
+                    const propData = moduleObject?.props?.compositeAttr
+                    if(propData) this.childCom?.current?.propDataWatchHandle(propData)
                 }
                 render() {
                     return createElement(componentsMap.get(moduleObject.className || className), {...moduleObject, ref: this.childCom})
