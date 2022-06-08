@@ -1,3 +1,3 @@
 import './index.css';
 import './icons/index'
-import './core/regModule';
+import './core/regModuleFunc';
