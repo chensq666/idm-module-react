@@ -140,16 +140,17 @@
     ],
     "plugins": [
       [
-          "import",
-          {
-              "libraryName": "idm-react-antd",
-              "libraryDirectory": "lib",
-              "style": true
-          }
+        "import",
+        {
+          "libraryName": "idm-react-antd",
+          "libraryDirectory": "lib",
+          "style": true
+        }
       ]
     ]
   },
   "devDependencies": {
+    "@types/axios": "^0.14.0",
     "@types/jquery": "^3.5.14",
     "@types/lodash": "^4.14.182",
     "@types/qs": "^6.9.7",
