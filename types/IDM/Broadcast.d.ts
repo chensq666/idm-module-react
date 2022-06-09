@@ -1,4 +1,4 @@
-interface IDMBroadcastMessage {
+interface IDMBroadcastMessage{
   type: string
   message: any
   rangeModule: null| Array<any>
@@ -8,26 +8,26 @@ interface IDMBroadcastMessage {
   triggerType: string,
 }
 
-export interface OpenDialogOptions {
+export interface OpenDialogOptions<T = function> {
   moduleId: string
   openUrl: string
-  success?: function
-  yes?: function
-  cancel?: function
-  end?: function
+  success?: T
+  yes?: T
+  cancel?: T
+  end?: T
 }
 
-export interface OpenControlOptions{
+export interface OpenControlOptions<T = function>{
   param: {
    marketModuleId: string
    pageId: string
    packageid: string
   },
   showTop?: string
-  success?: function
-  yes?: function
-  reset?: function
-  other?: function
+  success?: T
+  yes?: T
+  reset?: T
+  other?: T
 }
 
 export interface IDMBroadcast {
