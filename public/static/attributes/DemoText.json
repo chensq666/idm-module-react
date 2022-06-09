@@ -33,6 +33,180 @@
                     "text": "文本",
                     "bindKey": "text",
                     "default": "测试文本"
+                },
+                {
+                    "type": "actionSelect",
+                    "layoutType": "block",
+                    "text": "文本",
+                    "bindKey": "text1",
+                    "default": "测试文本"
+                },
+                {
+                    "type": "border",
+                    "layoutType": "inline",
+                    "text": "文本",
+                    "bindKey": "text2",
+                    "default": "测试文本"
+                },
+                {
+                    "type": "box",
+                    "layoutType": "inline",
+                    "text": "文本",
+                    "bindKey": "text3",
+                    "default": "测试文本"
+                },
+                {
+                    "type": "checkbox",
+                    "layoutType": "inline",
+                    "text": "文本",
+                    "bindKey": "text4",
+                    "default": "测试文本",
+                    "dictionary":[
+                        {
+                            "label":"显示的文本",
+                            "value":"字典的值"
+                        },
+                        {
+                            "label":"显示的文本",
+                            "value":"字典的值2"
+                        }
+                      ]
+                },
+                {
+                    "type": "colorPicker",
+                    "layoutType": "inline",
+                    "text": "文本",
+                    "bindKey": "text5",
+                    "default": "测试文本"
+                },
+                {
+                    "type": "datePicker",
+                    "layoutType": "inline",
+                    "text": "文本",
+                    "bindKey": "text6",
+                    "default": "测试文本"
+                },
+                {
+                    "type": "font",
+                    "layoutType": "inline",
+                    "text": "文本",
+                    "bindKey": "text7",
+                    "default": "测试文本"
+                },
+                {
+                    "type": "grid",
+                    "layoutType": "inline",
+                    "text": "文本",
+                    "bindKey": "text8",
+                    "default": "测试文本"
+                },
+                {
+                    "type": "iconSelect",
+                    "layoutType": "inline",
+                    "text": "文本",
+                    "bindKey": "text9",
+                    "default": "测试文本"
+                },
+                {
+                    "type": "layout",
+                    "layoutType": "inline",
+                    "text": "文本",
+                    "bindKey": "text10",
+                    "default": "测试文本"
+                },
+                {
+                    "type": "inputNumber",
+                    "layoutType": "inline",
+                    "text": "文本",
+                    "bindKey": "text11",
+                    "default": "测试文本"
+                },
+                {
+                    "type": "inputNumberUnit",
+                    "layoutType": "inline",
+                    "text": "文本",
+                    "bindKey": "text12",
+                    "default": "测试文本"
+                },
+                {
+                    "type": "pageModuleSelect",
+                    "layoutType": "inline",
+                    "text": "文本",
+                    "bindKey": "text13",
+                    "default": "测试文本"
+                },
+                {
+                    "type": "radio",
+                    "layoutType": "inline",
+                    "text": "文本",
+                    "bindKey": "text14",
+                    "default": "测试文本",
+                    "dictionary":[
+                        {
+                            "label":"显示的文本",
+                            "value":"字典的值"
+                        },
+                        {
+                            "label":"显示的文本",
+                            "value":"字典的值2"
+                        }
+                      ]
+                },
+                {
+                    "type": "richText",
+                    "layoutType": "inline",
+                    "text": "文本",
+                    "bindKey": "text15",
+                    "default": "测试文本"
+                },
+                {
+                    "type": "select",
+                    "layoutType": "inline",
+                    "text": "文本",
+                    "bindKey": "text16",
+                    "default": "测试文本"
+                },
+                {
+                    "type": "slider",
+                    "layoutType": "inline",
+                    "text": "文本",
+                    "bindKey": "text17",
+                    "default": "测试文本"
+                },
+                {
+                    "type": "switch",
+                    "layoutType": "inline",
+                    "text": "文本",
+                    "bindKey": "text18",
+                    "default": "测试文本"
+                },
+                {
+                    "type": "textarea",
+                    "layoutType": "inline",
+                    "text": "文本",
+                    "bindKey": "text19",
+                    "default": "测试文本"
+                },
+                {
+                    "type": "treeSelect",
+                    "layoutType": "inline",
+                    "text": "文本",
+                    "bindKey": "text20",
+                    "default": "测试文本"
+                },
+                {
+                    "type": "uploadImage",
+                    "layoutType": "inline",
+                    "text": "文本",
+                    "bindKey": "text21",
+                    "default": "测试文本"
+                },
+                {
+                    "type": "table",
+                    "layoutType": "inline",
+                    "text": "文本",
+                    "bindKey": "text22",
+                    "default": "测试文本"
                 }
             ]
         },
