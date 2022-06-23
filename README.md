@@ -1,6 +1,6 @@
 # Getting Started with Create React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+[![OSCS Status](https://www.oscs1024.com/platform/badge/web-csq/idm-module-react.svg?size=small)](https://www.oscs1024.com/project/web-csq/idm-module-react?ref=badge_small)
 
 ## 简介
 
@@ -22,7 +22,3 @@ npm start
 ### 打包
 
 npm run build
-
-## 安全
-
-[![OSCS Status](https://www.oscs1024.com/platform/badge/web-csq/idm-module-react.svg?size=small)](https://www.oscs1024.com/project/web-csq/idm-module-react?ref=badge_small)
