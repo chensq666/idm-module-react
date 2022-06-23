@@ -1,5 +1,9 @@
+interface ModuleObject {
+  env: 'develop' | 'production'
+}
 interface IDMCommonState {
   propData: any
+  moduleObject: ModuleObject
 }
 
 interface IDMCommonProp {
