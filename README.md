@@ -22,3 +22,7 @@ npm start
 ### 打包
 
 npm run build
+
+## 安全
+
+[![OSCS Status](https://www.oscs1024.com/platform/badge/web-csq/idm-module-react.svg?size=small)](https://www.oscs1024.com/project/web-csq/idm-module-react?ref=badge_small)
