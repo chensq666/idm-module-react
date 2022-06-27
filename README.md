@@ -7,7 +7,7 @@
 此项目专为`idm`低代码平台搭建`create-react-app`框架
 
 ## UI
-为避免和`idm`产生样式冲突，建议使用UI组件库`idm-react-antd``
+为避免和`idm`产生样式冲突，建议使用UI组件库`idm-react-antd`
 
 ## 步骤
 
