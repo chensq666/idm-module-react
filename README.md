@@ -20,7 +20,7 @@ npm i
 npm start
 
 #### 预览
- http://localhost:3000?className=`your component's className`
+ http://localhost:3000?className= `your component's className`
 
 ### 打包
 
