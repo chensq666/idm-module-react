@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { Button } from 'idm-react-antd'
-interface IState extends IDMCommonState {
-}
+interface IState extends IDMCommonState {}
 
 class DemoText extends Component<IDMCommonProp, IState> {
     constructor(rootProps) {
@@ -11,9 +10,6 @@ class DemoText extends Component<IDMCommonProp, IState> {
                 title: '测试文本'
             }
         }
-        console.log(this.props)
-        console.log(this.state)
-
     }
     /**
      * 把属性转换成样式对象
@@ -155,7 +151,7 @@ class DemoText extends Component<IDMCommonProp, IState> {
         // 1 --- > 函数传参
         // 2 --- > setState回调
         const stateObj = { ...this.state, propData }
-        this.setState({propData})
+        this.setState({ propData })
         this.convertAttrToStyleObject(stateObj)
     }
     /**
@@ -176,7 +172,7 @@ class DemoText extends Component<IDMCommonProp, IState> {
         const { id } = this.props
         const { propData } = this.state
         return (
-            <div idm-ctrl="idm_module" idm-ctrl-id={id}>
+            <div idm-ctrl='idm_module' id={id} idm-ctrl-id={id}>
                 <div>{propData.title}</div>
                 <Button>test button</Button>
             </div>
