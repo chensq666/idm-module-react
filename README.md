@@ -11,7 +11,7 @@ IDM组件开发脚手架（React版本）
 为避免和`idm`产生样式冲突，建议使用UI组件库`idm-react-antd`
 
 ## 预览
-start后 http://localhost:3000?className= `your component's className`
+after start look at http://localhost:3000?className= `your component's className`
 
 ## release note
 
