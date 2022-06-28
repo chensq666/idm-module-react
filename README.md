@@ -17,8 +17,8 @@ start后 http://localhost:3000?className= `your component's className`
 
 ### 2022-06-28
 - 新增工具文件，更好的tree shaking
-    1.发消息
-    2.批量生成类名
+    1. 发消息
+    2. 批量生成类名
 - 区分component内部数据
     1. prop 父级传入
     2. state.propData 组件属性传入
