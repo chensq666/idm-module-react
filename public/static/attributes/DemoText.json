@@ -23,16 +23,9 @@
                 {
                     "type": "input",
                     "layoutType": "inline",
-                    "text": "显示标题",
-                    "bindKey": "htmlTitle",
-                    "default": "页面标题"
-                },
-                {
-                    "type": "input",
-                    "layoutType": "inline",
-                    "text": "文本",
-                    "bindKey": "text",
-                    "default": "测试文本"
+                    "text": "组件标题",
+                    "bindKey": "title",
+                    "default": "文本"
                 }
             ]
         },
