@@ -1,5 +1,5 @@
 # IDM component development scaffold (React version)
-IDM组件开发脚手架（Vue版本）
+IDM组件开发脚手架（React版本）
 
 [![OSCS Status](https://www.oscs1024.com/platform/badge/web-csq/idm-module-react.svg?size=small)](https://www.oscs1024.com/project/web-csq/idm-module-react?ref=badge_small)
 
