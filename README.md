@@ -14,6 +14,10 @@ After start look at http://localhost:3000?className= `your component's className
 
 ## Release Note
 
+## 2022-07-01
+- add:component.setContextValue
+- perf:IDM.types
+
 ### 2022-06-28
 - 新增工具ts，更好的tree shaking
     1. 发消息

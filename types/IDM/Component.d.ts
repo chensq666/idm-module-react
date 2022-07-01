@@ -42,4 +42,5 @@ interface IDMReactComponent {
     idmSetContextValue(object: any): void
     idmGetContextValue(): any
     reload(): void
+    setContextValue(object: any): void
 }
