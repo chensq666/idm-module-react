@@ -1,5 +1,6 @@
 import { Component } from 'react'
 import { Button } from 'idm-react-antd'
+import { commonParam } from '../utils/componentUtils'
 interface IState extends IDMCommonState {}
 class DemoText extends Component<IDMCommonProp, IState> {
     constructor(rootProps) {
@@ -15,6 +16,42 @@ class DemoText extends Component<IDMCommonProp, IState> {
         if (object.type != 'pageCommonInterface') {
             return
         }
+    }
+    
+    /**
+     * 通用的获取表达式匹配后的结果
+     */
+     getExpressData(dataName, dataFiled, resultData) {
+        //给defaultValue设置dataFiled的值
+        var _defaultVal: any = undefined
+        if (dataFiled) {
+            var filedExp = dataFiled
+            filedExp = dataName + (filedExp.startsWiths('[') ? '' : '.') + filedExp
+            var dataObject = { IDM: window.IDM }
+            dataObject[dataName] = resultData
+            _defaultVal = window.IDM.express.replace.call(this, '@[' + filedExp + ']', dataObject)
+        }
+        //对结果进行再次函数自定义
+        if (this.state.propData.customFunction && this.state.propData.customFunction.length > 0) {
+            var params = commonParam()
+            var resValue = ''
+            try {
+                const funcName: string | undefined = this.state.propData.customFunction[0].name
+                resValue =
+                    funcName &&
+                    window[funcName] &&
+                    window[funcName].call(this, {
+                        ...params,
+                        ...this.state.propData.customFunction[0].param,
+                        moduleObject: this.state.moduleObject,
+                        expressData: _defaultVal,
+                        interfaceData: resultData
+                    })
+            } catch (error) {}
+            _defaultVal = resValue
+        }
+
+        return _defaultVal
     }
     /**
      * 把属性转换成样式对象
