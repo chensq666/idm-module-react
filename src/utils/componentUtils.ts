@@ -14,16 +14,16 @@ export function generateClassName(themePrefix, classArray) {
  * } object
  */
 export function sendBroadcastMessage(object) {
-    window.IDM.broadcast && window.IDM.broadcast.send(object)
+    IDM.broadcast && IDM.broadcast.send(object)
 }
 /**
  * 通用的url参数对象
  * 所有地址的url参数转换
  */
 export function commonParam() {
-    let urlObject = window.IDM.url.queryObject()
+    let urlObject = IDM.url.queryObject()
     var params = {
-        pageId: window.IDM.broadcast && window.IDM.broadcast.pageModule ? window.IDM.broadcast.pageModule.id : '',
+        pageId: IDM.broadcast && IDM.broadcast.pageModule ? IDM.broadcast.pageModule.id : '',
         urlData: JSON.stringify(urlObject)
     }
     return params
@@ -31,14 +31,14 @@ export function commonParam() {
 // 加载css
 export function loadIconFile(iconfontUrl) {
     let baseUrl = iconfontUrl + (iconfontUrl.substring(iconfontUrl.length - 1, iconfontUrl.length) === '/' ? '' : '/')
-    window.IDM.http
+    IDM.http
         .get(baseUrl + 'iconfont.json', {})
         .then((res) => {
             if (!res.data) {
                 return
             }
             //存在，加载css
-            window.IDM.module.loadCss(window.IDM.url.getWebPath(baseUrl + 'iconfont.css'), true)
+            IDM.module.loadCss(IDM.url.getWebPath(baseUrl + 'iconfont.css'), true)
         })
         .catch(function (error) {
             console.log(error)

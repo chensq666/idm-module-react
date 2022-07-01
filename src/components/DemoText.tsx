@@ -28,7 +28,7 @@ class DemoText extends Component<IDMCommonProp, IState> {
             filedExp = dataName + (filedExp.startsWiths('[') ? '' : '.') + filedExp
             var dataObject = { IDM: window.IDM }
             dataObject[dataName] = resultData
-            _defaultVal = window.IDM.express.replace.call(this, '@[' + filedExp + ']', dataObject)
+            _defaultVal = IDM.express.replace.call(this, '@[' + filedExp + ']', dataObject)
         }
         //对结果进行再次函数自定义
         if (this.state.propData.customFunction && this.state.propData.customFunction.length > 0) {

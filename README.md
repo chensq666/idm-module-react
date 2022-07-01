@@ -16,7 +16,7 @@ After start look at http://localhost:3000?className= `your component's className
 
 ## 2022-07-01
 - add:component.setContextValue
-- perf: IDM.types
+- perf: lodash & jquery & IDM.types
 - perf: manifest & robots
 - perf: don't build react & react-dom
 
