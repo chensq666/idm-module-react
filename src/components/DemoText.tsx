@@ -1,7 +1,6 @@
-import React, { Component } from 'react'
+import { Component } from 'react'
 import { Button } from 'idm-react-antd'
 interface IState extends IDMCommonState {}
-
 class DemoText extends Component<IDMCommonProp, IState> {
     constructor(rootProps) {
         super(rootProps)
