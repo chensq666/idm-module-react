@@ -10,13 +10,6 @@
             "className": "DemoText",
             "comType": "common",
             "comLangue": "react"
-        },
-        {
-            "classId": "idm.component.react.demoInput",
-            "comName": "测试输入框",
-            "className": "DemoInput",
-            "comType": "common",
-            "comLangue": "react"
         }
     ]
 }

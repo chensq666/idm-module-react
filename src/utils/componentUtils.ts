@@ -30,7 +30,7 @@ export function commonParam() {
 }
 // 加载css
 export function loadIconFile(iconfontUrl) {
-    let baseUrl = iconfontUrl + (iconfontUrl.substring(iconfontUrl.length - 1, iconfontUrl.length) == '/' ? '' : '/')
+    let baseUrl = iconfontUrl + (iconfontUrl.substring(iconfontUrl.length - 1, iconfontUrl.length) === '/' ? '' : '/')
     window.IDM.http
         .get(baseUrl + 'iconfont.json', {})
         .then((res) => {

@@ -13,11 +13,10 @@ class DemoText extends Component<IDMCommonProp, IState> {
     }
     setContextValue(object) {
         console.log('统一接口设置的值', object)
-        if (object.type != 'pageCommonInterface') {
+        if (object.type !== 'pageCommonInterface') {
             return
         }
     }
-    
     /**
      * 通用的获取表达式匹配后的结果
      */
