@@ -661,7 +661,7 @@ module.exports = function (webpackEnv) {
         },
       ].filter(Boolean),
     },
-    externals: undefined,
+    externals,
     plugins: [
       new HtmlWebpackPlugin(
         Object.assign(
