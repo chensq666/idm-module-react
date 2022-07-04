@@ -20,7 +20,7 @@ class DemoText extends Component<IDMCommonProp, IState> {
     /**
      * 通用的获取表达式匹配后的结果
      */
-     getExpressData(dataName, dataFiled, resultData) {
+    getExpressData(dataName, dataFiled, resultData) {
         //给defaultValue设置dataFiled的值
         var _defaultVal: any = undefined
         if (dataFiled) {
@@ -55,9 +55,9 @@ class DemoText extends Component<IDMCommonProp, IState> {
     /**
      * 把属性转换成样式对象
      */
-    convertAttrToStyleObject(stateObj) {
+    convertAttrToStyleObject() {
         const { id } = this.props
-        const { propData } = stateObj
+        const { propData } = this.state
         var styleObject = {}
         if (propData.bgSize && propData.bgSize === 'custom') {
             styleObject['background-size'] =
@@ -188,12 +188,10 @@ class DemoText extends Component<IDMCommonProp, IState> {
      * 提供父级组件调用的刷新prop数据组件
      */
     propDataWatchHandle(propData) {
-        // setState是异步，提供两种数据不同步解决方案，选其中一种即可（推荐函数传参，速度快）
-        // 1 --- > 函数传参
-        // 2 --- > setState回调
-        const stateObj = { ...this.state, propData }
-        this.setState({ propData })
-        this.convertAttrToStyleObject(stateObj)
+        // setState是异步， 其他操作要放在回调里
+        this.setState({ propData }, () => {
+            this.convertAttrToStyleObject()
+        })
     }
     /**
      * 组件通信：接收消息的方法

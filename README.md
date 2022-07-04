@@ -15,7 +15,8 @@ After start look at http://localhost:3000?className= `your component's className
 ## Release Note
 
 ## 2022-07-04
-- perf:idm-react-antd默认样式，减少style侵入
+- fix: 预览时setState异步拿不到数据
+- perf: idm-react-antd默认样式，减少style侵入
 
 ## 2022-07-01
 - add:component.setContextValue
