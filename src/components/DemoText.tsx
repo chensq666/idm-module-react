@@ -188,7 +188,7 @@ class DemoText extends Component<IDMCommonProp, IState> {
      * 提供父级组件调用的刷新prop数据组件
      */
     propDataWatchHandle(propData) {
-        // setState是异步， 其他操作要放在回调里
+        // setState是异步， 其他操作要放在回调里，避免initData内数据不同步
         this.setState({ propData }, () => {
             this.convertAttrToStyleObject()
         })
