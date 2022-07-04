@@ -1,5 +1,5 @@
-# IDM component development scaffold (React version)
-IDM组件开发脚手架（React版本）
+# IDM组件开发脚手架（React版本）
+IDM component development scaffold (React version)
 
 [![OSCS Status](https://www.oscs1024.com/platform/badge/web-csq/idm-module-react.svg?size=small)](https://www.oscs1024.com/project/web-csq/idm-module-react?ref=badge_small)
 
@@ -13,6 +13,9 @@ npm i idm-react-antd -S
 After start look at http://localhost:3000?className= `your component's className`
 
 ## Release Note
+
+## 2022-07-04
+- perf:idm-react-antd默认样式，减少style侵入
 
 ## 2022-07-01
 - add:component.setContextValue
