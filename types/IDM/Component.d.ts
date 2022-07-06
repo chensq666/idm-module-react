@@ -10,7 +10,6 @@ interface IDMCommonProp {
     asName: string
     callback: () => void
     classId: string
-    className: string
     codeSrc: string
     comId: string
     comName: string

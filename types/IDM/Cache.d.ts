@@ -5,7 +5,4 @@ export interface IDMCache<T> {
     tail: T | string
     put(key: string, value: object): void
     get(key: string): any
-    _keymap: {
-        [key: string]: any
-    }
 }
