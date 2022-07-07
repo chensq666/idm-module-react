@@ -14,6 +14,9 @@ After start look at http://localhost:3000?className= `your component's className
 
 ## Release Note
 
+## 2022-07-07
+- add:自动生成组件模板
+
 ## 2022-07-04
 - fix: 预览时setState异步拿不到数据
 - perf: idm-react-antd默认样式，减少style侵入
