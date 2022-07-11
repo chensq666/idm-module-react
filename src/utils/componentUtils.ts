@@ -1,9 +1,4 @@
 import { IDMBroadcastMessage } from "../../types/IDM/Broadcast"
-
-// 批量生成css类名
-export function generateClassName(themePrefix: string, classArray: Array<string>) {
-    return classArray.map((el) => themePrefix + el).join(',')
-}
 /**
  * 组件通信：发送消息的方法
  * @param {
