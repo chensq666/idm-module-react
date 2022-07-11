@@ -5,7 +5,7 @@ import config from '../../public/static/config.json'
 (() => {
     const className = window.IDM && window.IDM.url.queryString('className')
     const requireComponent = require.context('../components', true, /[A-Z]\w+\.(jsx|tsx)$/)
-    const componentsMap = new Map()
+    const componentsMap = new Map<string, any>()
     requireComponent.keys().forEach((fileName: any) => {
         const componentConfig = requireComponent(fileName)
         const componentName = fileName.split('/').pop().replace(/\.\w+$/, '')
@@ -16,7 +16,7 @@ import config from '../../public/static/config.json'
     var defining = {}
     config &&
         config.module.forEach((item: any) => {
-            defining[item.classId + '@' + config.version] = function (moduleObject) {
+            defining[item.classId + '@' + config.version] = function (moduleObject: { compositeAttr: any; innerAttr: any; innerComName: any; id: any; routerId: any; idmProps: (props: any) => void | undefined; moduleReload: () => void | undefined; idmBroadcastMessage: (object: any) => void | undefined; idmSetContextValue: (object: any) => void | undefined; idmGetContextValue: () => void; mountComplete: (arg0: any) => any; props: { compositeAttr: any }; className: any }) {
                 // 把组件定义的属性返回给核心框架
                 moduleObject.compositeAttr = item.compositeAttr
                 //把组件定义的组件内属性返回给核心框架(如果有的话)

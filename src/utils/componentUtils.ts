@@ -1,5 +1,7 @@
+import { IDMBroadcastMessage } from "../../types/IDM/Broadcast"
+
 // 批量生成css类名
-export function generateClassName(themePrefix, classArray) {
+export function generateClassName(themePrefix: string, classArray: Array<string>) {
     return classArray.map((el) => themePrefix + el).join(',')
 }
 /**
@@ -13,7 +15,7 @@ export function generateClassName(themePrefix, classArray) {
  *  globalSend:如果为true则全站发送消息，注意全站rangeModule是无效的，只有className才有效，默认为false
  * } object
  */
-export function sendBroadcastMessage(object) {
+export function sendBroadcastMessage(object: IDMBroadcastMessage) {
     IDM.broadcast && IDM.broadcast.send(object)
 }
 /**
@@ -29,9 +31,9 @@ export function commonParam() {
     return params
 }
 // 加载css
-export function loadIconFile(iconfontUrl) {
-    if(!iconfontUrl) return
-    let baseUrl = iconfontUrl + (iconfontUrl.substring(iconfontUrl.length - 1, iconfontUrl.length) === '/' ? '' : '/')
+export function loadIconFile(confrontUrl: string) {
+    if(!confrontUrl) return
+    let baseUrl = confrontUrl + (confrontUrl.substring(confrontUrl.length - 1, confrontUrl.length) === '/' ? '' : '/')
     IDM.http
         .get(baseUrl + 'iconfont.json', {})
         .then((res) => {
