@@ -147,7 +147,7 @@
         {
           "libraryName": "idm-react-antd",
           "libraryDirectory": "lib",
-          "style": true
+          "style": "css"
         }
       ]
     ]

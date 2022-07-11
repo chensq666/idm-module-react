@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
      "target": "es5",                            /**指定ECMAScript目标版本**/
+     "lib": [ "dom", "dom.iterable", "esnext" ], // 指定要包含在编译中的library
      "module": "commonjs",                       /**指定生成哪个模块系统代码**/
      "allowJs": true,                            /**允许编译js文件**/
      "jsx": "preserve",                          /**支持JSX**/
