@@ -33,14 +33,14 @@ log(`Please enter the IDM component's className/comName to be generated, like IT
 process.stdin.on('data', async (chunk) => {
     const inputStr = String(chunk).trim().toString()
     const dataArray = inputStr && inputStr.split('/')
-    if(dataArray.length !== 2) {
+    if(!Array.isArray(dataArray) || dataArray.length !== 2) {
         log('Please enter the correct data format')
         return
     }
     // 组件类名
-    const className = inputStr.split('/')[0]
+    const className = dataArray[0]
     // 组件中文名
-    const comName = inputStr.split('/')[1]
+    const comName = dataArray[1]
     // 组件路径
     const componentPath = resolve('../src/components')
     // react文件
