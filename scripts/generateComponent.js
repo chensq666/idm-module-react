@@ -41,10 +41,8 @@ process.stdin.on('data', async (chunk) => {
     const className = dataArray[0]
     // 组件中文名
     const comName = dataArray[1]
-    // 组件路径
-    const componentPath = resolve('../src/components')
     // react文件
-    const reactFile = resolve(componentPath, `${className}.tsx`)
+    const reactFile = resolve('../src/components', `${className}.tsx`)
     // json文件
     const jsonFile = resolve('../public/static/attributes', `${className}.json`)
     // configJson文件
