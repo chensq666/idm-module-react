@@ -14,6 +14,9 @@ After start look at http://localhost:3000?className= `your component's className
 
 ## Release Note
 
+## 2022-07-11
+- update: root.element.id
+
 ## 2022-07-07
 - add:自动生成组件模板
 

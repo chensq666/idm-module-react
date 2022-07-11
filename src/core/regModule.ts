@@ -24,7 +24,7 @@ import config from '../../public/static/config.json'
                 //组件内部容器组件的名称
                 if (item.innerComName) moduleObject.innerComName = item.innerComName
                 // 创建根节点
-                const root = createRoot(document.getElementById(moduleObject.id)!)
+                const root = createRoot(document.getElementById(moduleObject.id + moduleObject.routerId || '')!)
                 root.render(
                     createElement(() => {
                         const childCom = useRef<IDMReactComponent>()
