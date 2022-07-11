@@ -14,17 +14,17 @@ After start look at http://localhost:3000?className= `your component's className
 
 ## Release Note
 
-## 2022-07-11
+### 2022-07-11
 - update: root.element.id
 
-## 2022-07-07
+### 2022-07-07
 - add:自动生成组件模板
 
-## 2022-07-04
+### 2022-07-04
 - fix: 预览时setState异步拿不到数据
 - perf: idm-react-antd默认样式，减少style侵入
 
-## 2022-07-01
+### 2022-07-01
 - add:component.setContextValue
 - perf: lodash & jquery & IDM.types
 - perf: manifest & robots
