@@ -52,13 +52,13 @@ process.stdin.on('data', async (chunk) => {
     // 判断组件文件夹是否存在
     let fileExists = fs.existsSync(reactFile)
     if (fileExists) {
-        errorLog(`${className}react component already exists, please re-enter`)
+        errorLog(`${className} react component already exists, please re-enter`)
         return
     }
     // 配置json是否存在
     fileExists = fs.existsSync(jsonFile)
     if (fileExists) {
-        errorLog(`${className}json already exists, please re-enter`)
+        errorLog(`${className} json already exists, please re-enter`)
         return
     }
     // static/config.json内是否已经配置
