@@ -14,6 +14,9 @@ After start look at http://localhost:3000?className= `your component's className
 
 ## Release Note
 
+### 2022-07-12
+- add: root.element.id idm_
+
 ### 2022-07-11
 - update: root.element.id
 - remove: production_env sourceMap
