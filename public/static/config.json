@@ -1,15 +1,15 @@
 {
-    "version": "1.0.0",
-    "lasttime": "2022-07-07 17:39:57",
-    "author": "申龙",
-    "className": "react",
-    "module": [
-        {
-            "classId": "idm.component.react.demoText",
-            "comName": "测试文本",
-            "className": "DemoText",
-            "comType": "common",
-            "comLangue": "react"
-        }
-    ]
+  "version": "1.0.0",
+  "lasttime": "2022-07-22 15:39:08",
+  "author": "申龙",
+  "className": "react",
+  "module": [
+    {
+      "classId": "idm.component.react.demoText",
+      "comName": "测试文本",
+      "className": "DemoText",
+      "comType": "common",
+      "comLangue": "react"
+    }
+  ]
 }

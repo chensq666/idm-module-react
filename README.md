@@ -14,6 +14,9 @@ After start look at http://localhost:3000?className= `your component's className
 
 ## Release Note
 
+### 2022-07-22
+- perf: 将idm-generate 发布到npm 通过idm-generate vue/react生成对应模板
+
 ### 2022-07-12
 - add: root.element.id idm_
 

@@ -61,7 +61,7 @@
   "scripts": {
     "start": "node --max_old_space_size=8128 scripts/start.js",
     "build": "node scripts/build.js",
-    "generate": "node ./scripts/generateComponent.js",
+    "gen": "idm-generate react",
     "test": "node scripts/test.js"
   },
   "eslintConfig": {
@@ -153,6 +153,7 @@
     ]
   },
   "devDependencies": {
+    "@idm-modules/cli-generate": "^1.0.33",
     "@types/axios": "^0.14.0",
     "@types/jquery": "^3.5.14",
     "@types/lodash": "^4.14.182",
