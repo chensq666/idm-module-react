@@ -1,4 +1,6 @@
 ### 2022-07-22
+- type:将IDM对象提取到npm 优化语法提示
+### 2022-07-22
 - perf: 将idm-generate 发布到npm 通过idm-generate vue/react生成对应模板
 
 ### 2022-07-12

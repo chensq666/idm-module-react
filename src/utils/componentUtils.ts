@@ -1,4 +1,4 @@
-import { IDMBroadcastMessage } from "../../types/IDM/Broadcast"
+import { IDMBroadcastMessage } from "@idm-modules/types/IDM/Broadcast"
 /**
  * 组件通信：发送消息的方法
  * @param {
