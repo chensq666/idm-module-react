@@ -1,3 +1,4 @@
 import './index.less';
 import './icons/index'
-import './core/regModule';
+import { ReactRegister } from '@idm-modules/core'
+new ReactRegister()

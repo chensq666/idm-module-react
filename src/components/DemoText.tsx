@@ -1,5 +1,4 @@
 import { Component } from 'react'
-import { Button } from 'idm-react-antd'
 import { commonParam } from '../utils/componentUtils'
 interface IState extends IDMCommonState {}
 class DemoText extends Component<IDMCommonProp, IState> {
@@ -213,7 +212,6 @@ class DemoText extends Component<IDMCommonProp, IState> {
         return (
             <div idm-ctrl='idm_module' id={id} idm-ctrl-id={id}>
                 <div>{propData.title}</div>
-                <Button>test button</Button>
             </div>
         )
     }
