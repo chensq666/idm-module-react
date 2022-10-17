@@ -149,7 +149,7 @@
         head.appendChild(link);
     }
     var jsArray= [];
-    Object.keys(resource.js).forEach(key=>{
+    Object.keys(resource.js).forEach(function(key){
         jsArray.push(key)
     });
     loadjs(jsArray,function(){
@@ -159,7 +159,7 @@
             lastMdule.callback.call(this,lastMdule)
         }
     });
-    resource.css&&resource.css.forEach(item=>{
+    resource.css&&resource.css.forEach(function(item){
         var url = getPath + item + '.css';
         loadcss(url,false);
     })
