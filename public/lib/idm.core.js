@@ -53,7 +53,7 @@
         var hasOwnProperty = Object.prototype.hasOwnProperty;
         var uuidCharts = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".split("");
 
-        $types.forEach(elem => {
+        $types.forEach(function(elem) {
             class2type["[object " + elem + "]"] = elem.toLowerCase();
         });
         /**
@@ -71,7 +71,7 @@
                 if(!_this||!dataName||!attrData||typeof attrData!="object"){
                     return;
                 }
-                Object.keys(attrData).forEach(key=>{
+                Object.keys(attrData).forEach(function(key){
                     _this.set(this[dataName],key,attrData[key])
                 })
             },
@@ -98,15 +98,15 @@
              */
             setStyleToPageHead:function(id,object){
               var style = "";
-              for (const key in object) {
+              for (var key in object) {
                 if (Object.hasOwnProperty.call(object, key)) {
-                  const element = object[key];
-                  style+=`${key}:${element};`
+                  var element = object[key];
+                  style+=key+':'+element+';'
                 }
               }
               var ele=document.createElement("style");
               ele.setAttribute("from",id);
-              ele.innerHTML=`${id.indexOf(".")==0?"":"#"}${id}{${style}}`;
+              ele.innerHTML=id.indexOf(".")==0?"":"#"+id+style;
               document.getElementsByTagName('head')[0].appendChild(ele)
             },
             /**
@@ -387,9 +387,9 @@
                 if (!url) {
                     return "";
                 }
-                let isHtmlDir = false;
-                let isAssetsDir = false;
-                let isModuleDir = false;
+                var isHtmlDir = false;
+                var isAssetsDir = false;
+                var isModuleDir = false;
                 if (url.startsWiths("~")) {
                     isHtmlDir = true;
                     url = url.substr(1);
@@ -412,7 +412,7 @@
                 } else if (isModuleDir) {
                     return IDM.setting.webRoot.isModuleDir + url;
                 } else {
-                    let root = rootPath || IDM.setting.webRoot.default;
+                    var root = rootPath || IDM.setting.webRoot.default;
                     return root + url;
                 }
             },
@@ -472,14 +472,14 @@
                 return url;
             },
             stringify:function(params, options) {
-                let defaultOptions = {
+                var defaultOptions = {
                     arrayFormat: "repeat"
                 };
                 options = IDM.mix({}, defaultOptions, options);
                 return qs.stringify(params, options);
             },
             parse:function(str, options) {
-                let defaultOptions = {
+                var defaultOptions = {
                     arrayFormat: "repeat"
                 };
                 options = IDM.mix({}, defaultOptions, options);
@@ -490,7 +490,7 @@
              * @param url
              */
             analyzing:function(url) {
-                let i;
+                var i;
                 if (!url || url === '') {
                     return {
                         url: null,
@@ -505,10 +505,10 @@
                     };
                 }
                 url = decodeURIComponent(url);
-                const parse_url = /^(?:([A-Za-z]+):)?(\/{0,3})([0-9.\-A-Za-z]+)(?::(\d+))?(?:\/([^?#]*))?(?:\?([^#]*))?(?:#(.*))?$/;
-                const _result = parse_url.exec(url);
-                const names = ['url', 'protocol', 'slash', 'host', 'port', 'path', 'queryString', 'hash'];
-                const result = {};
+                var parse_url = /^(?:([A-Za-z]+):)?(\/{0,3})([0-9.\-A-Za-z]+)(?::(\d+))?(?:\/([^?#]*))?(?:\?([^#]*))?(?:#(.*))?$/;
+                var _result = parse_url.exec(url);
+                var names = ['url', 'protocol', 'slash', 'host', 'port', 'path', 'queryString', 'hash'];
+                var result = {};
                 for (i = 0; i < names.length; i++) {
                     result[names[i]] = _result[i];
                 }
@@ -518,12 +518,12 @@
                 if (!result.port) {
                     result.port = result.protocol === 'http:' ? '80' : result.protocol === 'https:' ? 8080 : '';
                 }
-                const _query = {};
+                var _query = {};
                 result.queryString = result.queryString || '';
-                const query = result.queryString.split('&');
+                var query = result.queryString.split('&');
                 for (i = 0; i < query.length; i++) {
-                    const item = query[i].trim();
-                    let _i = item.indexOf('='),
+                    var item = query[i].trim();
+                    var _i = item.indexOf('='),
                         _v = '',
                         _k = '';
                     if (item !== '') {
@@ -567,7 +567,7 @@
             根据环境的不同获取对应的url
             */
             getContextWebUrl:function(url){
-                const { NODE_ENV } = process.env
+                var NODE_ENV  = process.env.NODE_ENV
                 if(NODE_ENV =="production"){
                     return IDM.url.getURLRoot()+url
                 }else{
@@ -621,7 +621,7 @@
 
         }
         if(axios){
-            const Axios = axios.create({
+            var Axios = axios.create({
                 baseURL: "",
                 timeout: 20000,
                 responseType: "json",
@@ -633,9 +633,9 @@
                 withCredentials: true
             });
         
-            const DEFAULT_ERROR = "网络存在异常";
+            var DEFAULT_ERROR = "网络存在异常";
         
-            Axios.interceptors.response.use(response => {
+            Axios.interceptors.response.use(function(response) {
                 //处理IE9请求json时不能自动转化成对象的问题
                 if (response.data == null && response.config.responseType === "json" && response.request.responseText != null) {
                     try {
@@ -647,56 +647,56 @@
                 return response;
             });
         
-            Promise.prototype.done = function(fn) {
-                function responseHanlder(response) {
-                    if (response.headers) {
-                        var result = response.data || {};
-                        //success、state、message这3个属性都存在表示是我们自己应用的程序
-                        if (util.isDef(result.success) && util.isDef(result.state) && util.isDef(result.message)) {
-                            if (result.state == "20001" && !result.message) {
-                                result.message = DEFAULT_ERROR;
-                            }
-                            return fn(result);
-                        } else {
-                            return fn(result);
-                        }
-                    } else {
-                        var result = response;
-                        //success、state、message这3个属性都存在表示是我们自己应用的程序
-                        if (util.isDef(result.success) && util.isDef(result.state) && util.isDef(result.message)) {
-                            if (result.state == "20001" && !result.message) {
-                                result.message = DEFAULT_ERROR;
-                            }
-                            return fn(result);
-                        } else {
-                            return fn(result);
-                        }
-                    }
+            // Promise.prototype.done = function(fn) {
+            //     function responseHanlder(response) {
+            //         if (response.headers) {
+            //             var result = response.data || {};
+            //             //success、state、message这3个属性都存在表示是我们自己应用的程序
+            //             if (util.isDef(result.success) && util.isDef(result.state) && util.isDef(result.message)) {
+            //                 if (result.state == "20001" && !result.message) {
+            //                     result.message = DEFAULT_ERROR;
+            //                 }
+            //                 return fn(result);
+            //             } else {
+            //                 return fn(result);
+            //             }
+            //         } else {
+            //             var result = response;
+            //             //success、state、message这3个属性都存在表示是我们自己应用的程序
+            //             if (util.isDef(result.success) && util.isDef(result.state) && util.isDef(result.message)) {
+            //                 if (result.state == "20001" && !result.message) {
+            //                     result.message = DEFAULT_ERROR;
+            //                 }
+            //                 return fn(result);
+            //             } else {
+            //                 return fn(result);
+            //             }
+            //         }
         
-                }
-                let r = this.then(response => {
-                    return responseHanlder(response);
-                });
-                return r;
-            };
+            //     }
+            //     var r = this.then(function(response)  {
+            //         return responseHanlder(response);
+            //     });
+            //     return r;
+            // };
         
-            Promise.prototype.error = function(fn) {
-                function errorHandler(error) {
-                    fn({
-                        capture: false,
-                        state: -1,
-                        message: DEFAULT_ERROR,
-                        error: error
-                    });
-                }
-                return this.catch(error => {
-                    errorHandler(error);
-                });
-            };
+            // Promise.prototype.error = function(fn) {
+            //     function errorHandler(error) {
+            //         fn({
+            //             capture: false,
+            //             state: -1,
+            //             message: DEFAULT_ERROR,
+            //             error: error
+            //         });
+            //     }
+            //     return this.catch(function(error) {
+            //         errorHandler(error);
+            //     });
+            // };
         
-            Promise.prototype.always = function(fn) {
-                this.finally(fn);
-            };
+            // Promise.prototype.always = function(fn) {
+            //     this.finally(fn);
+            // };
         
             http.get = function(path, params, options, rootPath) {
                 if (IDM.type(options) == 'string') {
@@ -704,7 +704,7 @@
                     options = null;
                 }
                 path = IDM.url.getWebPath(path, rootPath);
-                let opts = {
+                var opts = {
                     params: params,
                     paramsSerializer: function(params) {
                         return qs.stringify(params, {
@@ -713,7 +713,7 @@
                     }
                 };
                 opts = IDM.mix(opts, options || {});
-                let p = Axios.get(path, opts);
+                var p = Axios.get(path, opts);
                 return p;
             }
         
@@ -723,22 +723,22 @@
                     options = null;
                 }
                 path = IDM.url.getWebPath(path, rootPath);
-                let configContentType = options && options.headers && options.headers["Content-Type"] ? options.headers["Content-Type"] : "";
+                var configContentType = options && options.headers && options.headers["Content-Type"] ? options.headers["Content-Type"] : "";
                 if (configContentType.indexOf('application/json')==-1) {
                     params = qs.stringify(params);
                 }
                 // if (configContentType !== "multipart/form-data") {
                 //     params = qs.stringify(params);
                 // }
-                let opts = {};
+                var opts = {};
                 opts = IDM.mix(opts, options || {});
-                let p = Axios.post(path, params, opts);
+                var p = Axios.post(path, params, opts);
                 return p;
             }
         
             http.all = function(arr) {
-                return axios.all(arr).then(axios.spread((...res) => {
-                    const list = res.map(item => item.data);
+                return axios.all(arr).then(axios.spread(function(res) {
+                    var list = res.map(function(item){return item.data} );
                     return list;
                 }))
             }
@@ -748,7 +748,7 @@
                     rootPath = options;
                     options = null;
                 }
-                let opts = {
+                var opts = {
                     headers: {
                         "Content-Type": "multipart/form-data"
                     }
@@ -756,11 +756,11 @@
                 opts = IDM.mix(opts, options || {});
                 var forms = new FormData();
                 forms.append("file", file);
-                for (let k in params) {
+                for (var k in params) {
                     forms.append(k, params[k]);
                 }
                 path = IDM.url.getWebPath(path, rootPath);
-                let p = Axios.post(path, forms, opts);
+                var p = Axios.post(path, forms, opts);
                 return p;
             }
         
@@ -768,28 +768,28 @@
             window.$$allLoadFilesArray = [];
         
             http.importFiles = function(files) {
-                let states = [];
-                let loadFiles = IDM.type(files) == "array" ? files.slice(0) : [files];
-                let promise = new Promise(resolve => {
-                    recursionLoad(() => {
-                        resolve(states);
-                    });
-                });
+                var states = [];
+                var loadFiles = IDM.type(files) == "array" ? files.slice(0) : [files];
+                // var promise = new Promise(function(resolve) {
+                //     recursionLoad(function() {
+                //         resolve(states);
+                //     });
+                // });
         
                 function recursionLoad(callback) {
-                    let f = loadFiles.shift();
+                    var f = loadFiles.shift();
                     if (f) {
                         loadFile(f)
-                            .then(result => {
+                            .then(function(result) {
                                 states.push(result);
                                 result = null;
                             })
-                            .catch(result => {
+                            .catch(function(result) {
                                 http.importFiles.kill(result.src, true);
                                 states.push(result);
                                 result = null;
                             })
-                            .finally(() => {
+                            .finally(function() {
                                 recursionLoad(callback);
                             });
                     } else {
@@ -809,67 +809,67 @@
             }
         
             http.loadFile = function(url) {
-                let type = IDM.http.getFileType(url);
-                let fileObj = null;
-                let promise = new Promise((resolve, reject) => {
-                    if (!window.$$allLoadFiles[url]) {
-                        if (type == ".js") {
-                            fileObj = document.createElement("script");
-                            fileObj.src = url;
-                        } else if (type == ".css") {
-                            fileObj = document.createElement("link");
-                            fileObj.href = url;
-                            fileObj.type = "text/css";
-                            fileObj.rel = "stylesheet";
-                        }
-                        if (fileObj) {
-                            fileObj.__views__ = [];
-                            fileObj.onload = fileObj.onreadystatechange = function() {
-                                if (!this.readyState || "loaded" === this.readyState || "complete" === this.readyState) {
-                                    window.$$allLoadFiles[url].state = "success";
-                                    resolve(window.$$allLoadFiles[url]);
-                                    _.each(window.$$allLoadFiles[url].promiseList, p => {
-                                        p.resolve(window.$$allLoadFiles[url]);
-                                    });
-                                }
-                            };
-                            fileObj.onerror = function() {
-                                window.$$allLoadFiles[url].state = "error";
-                                _.each(window.$$allLoadFiles[url].promiseList, p => {
-                                    p.reject(window.$$allLoadFiles[url]);
-                                });
-                            };
-                            if (!window.$$allLoadFiles[url]) {
-                                window.$$allLoadFiles[url] = {
-                                    elem: fileObj,
-                                    state: "pending",
-                                    type: type,
-                                    src: url,
-                                    promiseList: [{ resolve: resolve, reject: reject }]
-                                };
-                                window.$$allLoadFilesArray.push(url);
-                                document.getElementsByTagName("BODY")[0].appendChild(fileObj);
-                            }
-                        }
-                    } else {
-                        window.$$allLoadFilesArray.push(url);
-                        let state = window.$$allLoadFiles[url].state;
-                        if (state == "pending") {
-                            window.$$allLoadFiles[url].promiseList.push({ resolve: resolve, reject: reject });
-                        } else if (state == "success") {
-                            resolve(window.$$allLoadFiles[url]);
-                        } else {
-                            reject(window.$$allLoadFiles[url]);
-                        }
-                    }
-                });
+                var type = IDM.http.getFileType(url);
+                var fileObj = null;
+                // var promise = new Promise(function(resolve, reject) {
+                //     if (!window.$$allLoadFiles[url]) {
+                //         if (type == ".js") {
+                //             fileObj = document.createElement("script");
+                //             fileObj.src = url;
+                //         } else if (type == ".css") {
+                //             fileObj = document.createElement("link");
+                //             fileObj.href = url;
+                //             fileObj.type = "text/css";
+                //             fileObj.rel = "stylesheet";
+                //         }
+                //         if (fileObj) {
+                //             fileObj.__views__ = [];
+                //             fileObj.onload = fileObj.onreadystatechange = function() {
+                //                 if (!this.readyState || "loaded" === this.readyState || "complete" === this.readyState) {
+                //                     window.$$allLoadFiles[url].state = "success";
+                //                     resolve(window.$$allLoadFiles[url]);
+                //                     _.each(window.$$allLoadFiles[url].promiseList, function(p) {
+                //                         p.resolve(window.$$allLoadFiles[url]);
+                //                     });
+                //                 }
+                //             };
+                //             fileObj.onerror = function() {
+                //                 window.$$allLoadFiles[url].state = "error";
+                //                 _.each(window.$$allLoadFiles[url].promiseList, function(p){
+                //                     p.reject(window.$$allLoadFiles[url]);
+                //                 });
+                //             };
+                //             if (!window.$$allLoadFiles[url]) {
+                //                 window.$$allLoadFiles[url] = {
+                //                     elem: fileObj,
+                //                     state: "pending",
+                //                     type: type,
+                //                     src: url,
+                //                     promiseList: [{ resolve: resolve, reject: reject }]
+                //                 };
+                //                 window.$$allLoadFilesArray.push(url);
+                //                 document.getElementsByTagName("BODY")[0].appendChild(fileObj);
+                //             }
+                //         }
+                //     } else {
+                //         window.$$allLoadFilesArray.push(url);
+                //         var state = window.$$allLoadFiles[url].state;
+                //         if (state == "pending") {
+                //             window.$$allLoadFiles[url].promiseList.push({ resolve: resolve, reject: reject });
+                //         } else if (state == "success") {
+                //             resolve(window.$$allLoadFiles[url]);
+                //         } else {
+                //             reject(window.$$allLoadFiles[url]);
+                //         }
+                //     }
+                // });
                 return promise;
             }
             http.importFiles.kill = function(src, mark) {
                 IDM.array.remove(window.$$allLoadFilesArray, src);
-                let result = _.filter(window.$$allLoadFilesArray, url => url == src);
+                var result = _.filter(window.$$allLoadFilesArray, function(url) { return url == src});
                 if (result.length <= 0 || mark === true) {
-                    let f = window.$$allLoadFiles[src];
+                    var f = window.$$allLoadFiles[src];
                     if (f && f.elem && f.elem.parentNode) {
                         f.elem.parentNode.removeChild(f.elem);
                     }
@@ -877,7 +877,7 @@
                 }
             };
             http.importFiles.has = function(src) {
-                let result = _.filter(window.$$allLoadFilesArray, url => url == src);
+                var result = _.filter(window.$$allLoadFilesArray, function(url) { return url == src});
                 return result.length > 0;
             };
         }
@@ -893,14 +893,14 @@
             /**
              * 获取当前登录用户信息
              */
-            getCurrentUserInfo(){
+            getCurrentUserInfo:function(){
                 return this.userObject;
             },
             /**
              * 设置当前登录用户信息
              * @param {*} object 
              */
-            setCurrentUserInfo(object){
+            setCurrentUserInfo:function(object){
                 this.userObject = object;
             }
         }
@@ -914,14 +914,14 @@
             /**
              * 获取应用信息
              */
-            getAppInfo(){
+            getAppInfo:function(){
                 return this.appObject;
             },
             /**
              * 设置应用信息
              * @param {*} object 
              */
-            setAppInfo(object){
+            setAppInfo:function(object){
                 this.appObject = object;
             }
         }
@@ -934,14 +934,14 @@
             /**
              * 获取当前登录用户信息
              */
-             getCurrentThemeInfo(){
+             getCurrentThemeInfo:function(){
                 return this.themeObject;
             },
             /**
              * 设置当前登录用户信息
              * @param {*} object 
              */
-             setCurrentThemeInfo(object){
+             setCurrentThemeInfo:function(object){
                 this.themeObject = object;
                 //给body追加class
                 $("body").addClass((IDM.setting.applications?IDM.setting.applications.themeNamePrefix:"")+(typeof object==="object"?JSON.stringify(object):object));
@@ -974,7 +974,7 @@
                 //文字颜色
                 shuiyin.fillStyle = option.fontColor || "#F5F5F5";
                 //文字样式
-                shuiyin.font = `400 ${option.fontSize || '16px'} Microsoft JhengHei`;
+                shuiyin.font = '400 ' + option.fontSize || '16px' + 'Microsoft JhengHei';
                 if (mainContent.endsWiths(".png") || mainContent.endsWiths(".jpg") || mainContent.endsWiths(".jpeg")) {
                     if (text1) {
                         shuiyin.fillText(text1, option.fontLeftSize || 0, (option.rotate || 0) + (option.imgSize || 16) + parseInt((option.fontSize || 16))+(option.topSize || 0));
@@ -1042,7 +1042,7 @@
                 //     childList: true,
                 // });
             },
-            addEl($el, type, mainContent, text1, option, canvas) {
+            addEl:function($el, type, mainContent, text1, option, canvas) {
                 if(!$el){
                     return;
                 }
@@ -1050,19 +1050,7 @@
                 是因为z-index对个别内容影响，才考虑的不用body */
                 var watermark = document.createElement('div')
 
-                const styleStr = `
-                    position: absolute;
-                    top:0;
-                    left:0;
-                    bottom:0;
-                    right:0;
-                    height:100%;
-                    opacity:${option.opacity || 1};
-                    z-index:${type == 0 ? 0 : 9999999};
-                    pointer-events:none;
-                    background-repeat:repeat;
-                    mix-blend-mode: multiply;
-                    background-image:url('${canvas.toDataURL("image/png")}')`;
+                var styleStr = '';
                 watermark.setAttribute('style', styleStr);
                 watermark.classList.add('idm_watermark')
                 if ($el.querySelector(".idm_watermark")) {
@@ -1076,7 +1064,7 @@
                     return;
                 }
                 /* 关闭页面的水印，即要移除水印标签 */
-                let watermark = $el.querySelector('.idm_watermark')
+                var watermark = $el.querySelector('.idm_watermark')
                 watermark&&$el.removeChild(watermark)
             }
         }
@@ -1084,17 +1072,17 @@
          * 验证公共方法
          * @returns 
          */
-        let validatorMap = {
+        var validatorMap = {
             'isExternal':{
                 name:"是否外部的资源",
-                validator(path){
+                validator:function(path){
                 return /^(https?:|mailto:|tel:)/.test(path)
                 }
             },
             'isNull': {
                 name:"是否为空",
-                validator(value) {
-                let v = value;
+                validator:function(value) {
+                var v = value;
                 if (IDM.type(v) == 'string') {
                     v = v.trim();
                 }
@@ -1113,8 +1101,8 @@
             //验证是否是一个数字
             "isNumber": {
                 name:"是否是一个数字",
-                validator(value, precision) {
-                let reg = null;
+                validator:function(value, precision) {
+                var reg = null;
                 if (precision && precision > 0) {
                     reg = new RegExp("^-?([0-9]\\d*|0(?!\\.0+$))(\\.\\d{1," + precision + "})?$", 'ig');
                 } else {
@@ -1129,7 +1117,7 @@
             //验证是否是一个字符串
             "isString": {
                 name:"是否是一个字符串",
-                validator(value) {
+                validator:function(value) {
                 if (typeof value === 'string' || value instanceof String) {
                     return true
                 }
@@ -1139,7 +1127,7 @@
             //验证是否是一个数组
             "isArray": {
                 name:"是否是一个数组",
-                validator(arg) {
+                validator:function(arg) {
                 if (typeof Array.isArray === 'undefined') {
                     return Object.prototype.toString.call(arg) === '[object Array]'
                 }
@@ -1149,7 +1137,7 @@
             //验证数字是否超出
             "isNumberOver": {
                 name:"是否超出指定数字",
-                validator(value, ceil) {
+                validator:function(value, ceil) {
                 value = parseFloat(value);
                 ceil = parseFloat(ceil);
                 if (value > ceil) {
@@ -1161,7 +1149,7 @@
             //验证数字是否小于
             "isNumberUnder":{
                 name:"是否小于指定数字",
-                validator(value, floor) {
+                validator:function(value, floor) {
                 value = parseFloat(value);
                 floor = parseFloat(floor);
                 if (value < floor) {
@@ -1173,9 +1161,9 @@
             //验证数字精度
             "precision":{
                 name:"数字精度",
-                validator(value, precision) {
+                validator:function(value, precision) {
                 value = value.toString();
-                const reg = new RegExp("^-?([0-9]\\d*|0(?!\\.0+$))(\\.\\d{1," + precision + "})?$", 'ig');
+                var reg = new RegExp("^-?([0-9]\\d*|0(?!\\.0+$))(\\.\\d{1," + precision + "})?$", 'ig');
                 if (!reg.test(value)) {
                     return false;
                 }
@@ -1184,7 +1172,7 @@
             },
             "maxLength":{
                 name:"字符串超出指定长度",
-                validator(value,maxlength){
+                validator:function(value,maxlength){
                 if(value.length>maxlength){
                     return true;
                 }
@@ -1193,7 +1181,7 @@
             },
             "minLength":{
                 name:"字符小于指定长度",
-                validator(value,minLength){
+                validator:function(value,minLength){
                 if(value.length<minLength){
                     return true;
                 }
@@ -1204,11 +1192,11 @@
             'isIDCard': {
                 name:"身份证号码",
                 type:"express",
-                validator(value) {
+                validator:function(value) {
                 //身份证正则表达式(15位)
-                const isIDCard1 = /^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}$/;
+                var isIDCard1 = /^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}$/;
                 //身份证正则表达式(18位)
-                const isIDCard2 = /^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}([0-9]|X)$/;
+                var isIDCard2 = /^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}([0-9]|X)$/;
                 if (!isIDCard1.test(value) && !isIDCard2.test(value)) {
                     return false;
                 }
@@ -1219,7 +1207,7 @@
             'isMobile': {
                 name:"手机号码",
                 type:"express",
-                validator(value) {
+                validator:function(value) {
                 var reg = /^1(3|4|5|7|8|9|6)\d{9}$/;
                 if (!reg.test(value)) {
                     return false;
@@ -1231,7 +1219,7 @@
             "isTelPhone": {
                 name:"座机号码",
                 type:"express",
-                validator(value) {
+                validator:function(value) {
                 var reg = /^(0\d{2,3}-)?\d{7,8}$/;
                 if (!reg.test(value)) {
                     return false;
@@ -1243,7 +1231,7 @@
             "isMobileOrTelPhone": {
                 name:"手机/座机号码",
                 type:"express",
-                validator(value) {
+                validator:function(value) {
                 var mobile = /^1(3|4|5|7|8|9|6)\d{9}$/;
                 var tel = /^(0\d{2}-)?\d{7,8}$/;
                 if (!mobile.test(value) && !tel.test(value)) {
@@ -1256,7 +1244,7 @@
             'isEmail': {
                 name:"电子邮箱",
                 type:"express",
-                validator(value) {
+                validator:function(value) {
                 var reg = /\w+((-w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+/;
                 if (!reg.test(value)) {
                     return false;
@@ -1267,7 +1255,7 @@
             "isPlateNumber": {
                 name:"车牌号码",
                 type:"express",
-                validator(value) {
+                validator:function(value) {
                 var reg = /(^[\u4E00-\u9FA5]{1}[A-Z0-9]{6}$)|(^[A-Z]{2}[A-Z0-9]{2}[A-Z0-9\u4E00-\u9FA5]{1}[A-Z0-9]{4}$)|(^[\u4E00-\u9FA5]{1}[A-Z0-9]{5}[挂学警军港澳]{1}$)|(^[A-Z]{2}[0-9]{5}$)|(^(08|38){1}[A-Z0-9]{4}[A-Z0-9挂学警军港澳]{1}$)/;
                 if (reg.test(value)) {
                     return false;
@@ -1277,21 +1265,21 @@
             }
         }
         var validate = function() {
-            let args = Array.prototype.slice.call(arguments, 0);
-            let validator = args[0];
-            let params = args.slice(1);
+            var args = Array.prototype.slice.call(arguments, 0);
+            var validator = args[0];
+            var params = args.slice(1);
             return validatorMap[validator].validator.apply(this, params);
         }
         validate.map = validatorMap;
         return {
-            util,
-            url,
-            http,
-            user,
-            app,
-            theme,
-            watermark,
-            validate
+            util: util,
+            url:url,
+            http:http,
+            user:user,
+            app:app,
+            theme:theme,
+            watermark:watermark,
+            validate:validate
         }
     }
     /**
@@ -1304,7 +1292,7 @@
          */
         var msgEleStyle=document.createElement("style");
         msgEleStyle.setAttribute("from","IDM-Message-Style-Code");
-        msgEleStyle.innerHTML=`.IDM-Message.IDM-Message-wrapper{box-sizing:border-box;margin:0;padding:0;color:rgba(0,0,0,.55);font-size:13px;font-variant:tabular-nums;line-height:1;list-style:none;font-feature-settings:"tnum";position:fixed;top:16px;left:0;z-index:1010;width:100%;pointer-events:none;}.IDM-Message .IDM-Message-item{padding:8px;text-align:center;-webkit-animation-duration:.3s;animation-duration:.3s;position:relative;}.IDM-Message .IDM-Message-item .IDM-Message-count{text-align:center;position:absolute;left:-4px;top:-4px;background-color:red;color:#fff;font-size:12px;line-height:16px;border-radius:2px;display:inline-block;min-width:16px;height:16px;-webkit-animation-duration:.3s;animation-duration:.3s;border-radius:4px;}.IDM-Message .IDM-Message-item:first-child{margin-top:-8px;}.IDM-Message .IDM-Message-content{text-align:left;position:relative;display:inline-block;padding:10px 16px;background:#fff;border-radius:4px;box-shadow:0 4px 12px rgba(0,0,0,.15);pointer-events:all;max-width:80%;min-width:80px;}.IDM-Message .IDM-Message-content [class^="IDM-Message-content-"]{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:21px;line-height:21px;}.IDM-Message .IDM-Message-content .IDM-Message-content-with-close{padding-right:20px;}.IDM-Message .IDM-Message-icon{display:inline-block;color:inherit;font-style:normal;line-height:0;text-align:center;text-transform:none;vertical-align:-.125em;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;position:relative;top:1px;margin-right:8px;font-size:16px;}.IDM-Message .IDM-Message-icon svg{display:inline-block;}.IDM-Message .IDM-Message-content-info .IDM-Message-icon{color:#1890ff;user-select:none;}.IDM-Message .IDM-Message-content-success .IDM-Message-icon{color:#52c41a;}.IDM-Message .IDM-Message-content-error .IDM-Message-icon{color:#f5222d;}.IDM-Message .IDM-Message-content-warning .IDM-Message-icon{color:#faad14;}.IDM-Message .IDM-Message-icon-close{position:absolute;top:12px;right:5px;padding:0;overflow:hidden;font-size:12px;line-height:22px;background-color:transparent;border:none;outline:none;cursor:pointer;color:rgba(0,0,0,.45);transition:color .3s}.IDM-Message .IDM-Message-icon-close:hover>svg path{stroke:#555;}.IDM-Message .animate-turn{animation:IDMMessageTurn 1s linear infinite;-webkit-animation:IDMMessageTurn 1s linear infinite;}@keyframes IDMMessageTurn{0%{-webkit-transform:rotate(0deg);}25%{-webkit-transform:rotate(90deg);}50%{-webkit-transform:rotate(180deg);}75%{-webkit-transform:rotate(270deg);}100%{-webkit-transform:rotate(360deg);}}@-webkit-keyframes IDMMessageTurn{0%{-webkit-transform:rotate(0deg);}25%{-webkit-transform:rotate(90deg);}50%{-webkit-transform:rotate(180deg);}75%{-webkit-transform:rotate(270deg);}100%{-webkit-transform:rotate(360deg);}}@-webkit-keyframes IDMMessageMoveOut{0%{max-height:150px;padding:8px;opacity:1}to{max-height:0;padding:0;opacity:0}}@keyframes IDMMessageMoveOut{0%{max-height:150px;padding:8px;opacity:1}to{max-height:0;padding:0;opacity:0}}@-webkit-keyframes IDMMessageMoveIn{0%{transform:translateY(-100%);transform-origin:0 0;opacity:0}to{transform:translateY(0);transform-origin:0 0;opacity:1}}@keyframes IDMMessageMoveIn{0%{transform:translateY(-100%);transform-origin:0 0;opacity:0}to{transform:translateY(0);transform-origin:0 0;opacity:1}}@-webkit-keyframes IDMMessageShake{0%,100%{transform:translateX(0px);opacity:1;}25%,75%{transform:translateX(-4px);opacity:0.75;}50%{transform:translateX(4px);opacity:0.25;}}@keyframes IDMMessageShake{0%,100%{transform:translateX(0px);opacity:1;}25%,75%{transform:translateX(-4px);opacity:0.75;}50%{transform:translateX(4px);opacity:0.25;}}`;
+        msgEleStyle.innerHTML='';
         document.getElementsByTagName('head')[0].appendChild(msgEleStyle)
 
         /**
@@ -1640,7 +1628,7 @@
     //增加string的trim函数
     if (typeof String.prototype.trim != "function") {
         String.prototype.trim=function(){
-        let emptyBlockReg = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
+        var emptyBlockReg = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
         return this.replace(emptyBlockReg,'');
         }
     }
@@ -1912,7 +1900,7 @@
 
 
     var reg = /\@\[([^@]+)\]/ig;
-    // let reg2 = /(\w+)(\[\d+\])/ig;
+    // var reg2 = /(\w+)(\[\d+\])/ig;
     function findData(key, data) {
         data = data || this.variable;
         if (data[key] != undefined) {
@@ -3669,7 +3657,7 @@
     
     window.qs = window.Qs;
     window.IDM={
-        ...idmFun().util,
+        // ...idmFun().util,
         util:idmFun().util,
         setting:setting,
         url:idmFun().url,
@@ -3680,8 +3668,8 @@
         watermark:idmFun().watermark,
         validate:idmFun().validate,
         message:idmMessage(),
-        express,
-        layer
+        express: express,
+        layer:layer
     }
     IDM.layer.run();
 })();
