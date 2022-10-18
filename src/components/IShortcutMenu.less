@@ -1,0 +1,95 @@
+@main-color: #1b5fa4;
+@minor-color: #1e8fff;
+@scroll-bar-color: #c8bcbc;
+@height: 800px;
+.idm-shortcut-menu {
+    width: 60px;
+    // height: @height;
+    position: relative;
+    .idm-shortcut-menu-box-container {
+        background-color: @main-color;
+        width: 60px;
+        flex: 1;
+        display: flex;
+        flex-flow: column nowrap;
+        position: absolute;
+        top: 0;
+    }
+    .idm-shortcut-menu-box {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 0 0 15px 0;
+        cursor: pointer;
+        position: relative;
+        top: 0;
+        left: 0;
+        &:hover {
+            background-color: @minor-color;
+        }
+    }
+    .idm-shortcut-menu-icon {
+        text-align: center;
+        color: #fff;
+        font-size: 22px;
+        margin: 5px 0 0 0;
+        height: 40px;
+    }
+    .idm-shortcut-menu-text {
+        text-align: center;
+        color: #fff;
+        font-size: 13px;
+        margin-top: -3px;
+        height: 40px;
+        width: 100%;
+        overflow: hidden;
+    }
+    .idm-shortcut-menu-add {
+        width: 100%;
+        position: absolute;
+        bottom: 0;
+        height: 60px;
+        text-align: center;
+        padding: 10px 0 0 0;
+        z-index: 21;
+    }
+    .idm-shortcut-menu-add-icon {
+        color: #fff;
+        font-size: 22px;
+        cursor: pointer;
+    }
+    .no-hover:hover {
+        background: transparent !important;
+    }
+    /**
+     角标
+    */
+    .idm-shortcut-menu-maker {
+        position: absolute;
+        top: 18%;
+        color: #ffffff;
+        font-style: normal;
+        border-radius: 9px;
+        font-size: 12px !important;
+        text-align: center;
+        margin-top: -9px;
+        display: none;
+        line-height: 18px;
+        background: #ec4519;
+        right: 2px;
+        min-width: 18px;
+        height: 18px;
+        padding: 0px 6px;
+    }
+    /**
+     红点
+    */
+    .idm-shortcut-menu-maker-point {
+        top: 15px;
+        right: 15px;
+        width: 8px;
+        min-width: 8px;
+        height: 8px;
+        padding: 0;
+    }
+}
