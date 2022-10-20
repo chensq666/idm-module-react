@@ -86,18 +86,7 @@ class IShortcutMenu extends Component<IDMCommonProp, IState> {
                         iconSizeObj['font-size'] = element + 'px'
                         break
                     case 'font':
-                        fontObj['font-family'] = element.fontFamily
-                        if (element?.fontColors?.hex8) {
-                            fontObj['color'] = element.fontColors.hex8
-                        }
-                        fontObj['font-weight'] = element.fontWeight && element.fontWeight.split(' ')[0]
-                        fontObj['font-style'] = element.fontStyle
-                        fontObj['font-size'] = element.fontSize + element.fontSizeUnit
-                        fontObj['line-height'] =
-                            element.fontLineHeight +
-                            (element.fontLineHeightUnit === '-' ? '' : element.fontLineHeightUnit)
-                        fontObj['text-align'] = element.fontTextAlign
-                        fontObj['text-decoration'] = element.fontDecoration
+                        IDM.style.setFontStyle(fontObj, element)
                         break
                     case 'bgColor':
                         if (element && element.hex8) {
@@ -124,74 +113,13 @@ class IShortcutMenu extends Component<IDMCommonProp, IState> {
                         styleObject['background-attachment'] = element
                         break
                     case 'box':
-                        if (element.marginTopVal) {
-                            styleObject['margin-top'] = `${element.marginTopVal}`
-                        }
-                        if (element.marginRightVal) {
-                            styleObject['margin-right'] = `${element.marginRightVal}`
-                        }
-                        if (element.marginBottomVal) {
-                            styleObject['margin-bottom'] = `${element.marginBottomVal}`
-                        }
-                        if (element.marginLeftVal) {
-                            styleObject['margin-left'] = `${element.marginLeftVal}`
-                        }
-                        if (element.paddingTopVal) {
-                            styleObject['padding-top'] = `${element.paddingTopVal}`
-                        }
-                        if (element.paddingRightVal) {
-                            styleObject['padding-right'] = `${element.paddingRightVal}`
-                        }
-                        if (element.paddingBottomVal) {
-                            styleObject['padding-bottom'] = `${element.paddingBottomVal}`
-                        }
-                        if (element.paddingLeftVal) {
-                            styleObject['padding-left'] = `${element.paddingLeftVal}`
-                        }
+                        IDM.style.setBoxStyle(styleObject, element)
                         break
                     case 'boxShadow':
                         styleObject['box-shadow'] = element
                         break
                     case 'border':
-                        if (element.border.top.width > 0) {
-                            styleObject['border-top-width'] = element.border.top.width + element.border.top.widthUnit
-                            styleObject['border-top-style'] = element.border.top.style
-                            if (element.border.top.colors.hex8) {
-                                styleObject['border-top-color'] = element.border.top.colors.hex8
-                            }
-                        }
-                        if (element.border.right.width > 0) {
-                            styleObject['border-right-width'] =
-                                element.border.right.width + element.border.right.widthUnit
-                            styleObject['border-right-style'] = element.border.right.style
-                            if (element.border.right.colors.hex8) {
-                                styleObject['border-right-color'] = element.border.right.colors.hex8
-                            }
-                        }
-                        if (element.border.bottom.width > 0) {
-                            styleObject['border-bottom-width'] =
-                                element.border.bottom.width + element.border.bottom.widthUnit
-                            styleObject['border-bottom-style'] = element.border.bottom.style
-                            if (element.border.bottom.colors.hex8) {
-                                styleObject['border-bottom-color'] = element.border.bottom.colors.hex8
-                            }
-                        }
-                        if (element.border.left.width > 0) {
-                            styleObject['border-left-width'] = element.border.left.width + element.border.left.widthUnit
-                            styleObject['border-left-style'] = element.border.left.style
-                            if (element.border.left.colors.hex8) {
-                                styleObject['border-left-color'] = element.border.left.colors.hex8
-                            }
-                        }
-
-                        styleObject['border-top-left-radius'] =
-                            element.radius.leftTop.radius + element.radius.leftTop.radiusUnit
-                        styleObject['border-top-right-radius'] =
-                            element.radius.rightTop.radius + element.radius.rightTop.radiusUnit
-                        styleObject['border-bottom-left-radius'] =
-                            element.radius.leftBottom.radius + element.radius.leftBottom.radiusUnit
-                        styleObject['border-bottom-right-radius'] =
-                            element.radius.rightBottom.radius + element.radius.rightBottom.radiusUnit
+                        IDM.style.setBorderStyle(styleObject, element)
                         break
                 }
             }
@@ -204,13 +132,13 @@ class IShortcutMenu extends Component<IDMCommonProp, IState> {
     // 获取单列数量
     getOneLineNumber() {
         if(!this.state.shortCutData?.shortCut?.length) return 1
-        const oneBox = $('.idm-shortcut-menu-box')[0]
-        const containerBox = $('.idm-shortcut-menu-box-container')[0]
+        const oneBoxObj = window.getComputedStyle($('.idm-shortcut-menu-box')[0]) || {}
+        const containerBoxObj = window.getComputedStyle($('.idm-shortcut-menu-box-container')[0]) || {}
         const oneHeight =
-            parseInt(window.getComputedStyle(oneBox)['height']) +
-            parseInt(window.getComputedStyle(oneBox)['margin-bottom'])
+            parseInt(oneBoxObj['height'] || '1') +
+            parseInt(oneBoxObj['margin-bottom'] || '1')
         const totalHeight =
-            parseInt(window.getComputedStyle(containerBox)['height']) -
+            parseInt(containerBoxObj['height'] || '1') -
             (this.state.propData.bottomContent === false ? 0 : 70) // 减去底部的高
         return Math.floor(totalHeight / oneHeight)
     }
@@ -683,7 +611,7 @@ class IShortcutMenu extends Component<IDMCommonProp, IState> {
     }
 
     render() {
-        const { handleMouseEnter, handleMouseLeave } = this
+        const { handleMouseEnter, handleMouseLeave, handleClickIcon } = this
         const { id } = this.props
         const { pageShortcutList, moduleHeight, propData } = this.state
         return (
@@ -707,7 +635,7 @@ class IShortcutMenu extends Component<IDMCommonProp, IState> {
                         {propData.bottomContent === 'addApplication' && (
                             <div className='idm-shortcut-menu-add'>
                                 <i
-                                    onClick={this.handleClickIcon.bind(this)}
+                                    onClick={() => handleClickIcon.bind(this)}
                                     className='oa-menu-iconfont oa-menu-zengjiatianjiajiahao idm-shortcut-menu-add-icon'
                                 ></i>
                             </div>
