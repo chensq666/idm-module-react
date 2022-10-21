@@ -491,7 +491,8 @@ class IShortcutMenu extends Component<IDMCommonProp, IState> {
         this.setState({ commonFunctionShow: true })
     }
 
-    handleCommonFunctionClose(e) {
+    handleCommonFunctionClose() {
+        console.log(123)
         this.setState({ commonFunctionShow: false })
         this.initData()
     }
@@ -611,7 +612,7 @@ class IShortcutMenu extends Component<IDMCommonProp, IState> {
     }
 
     render() {
-        const { handleMouseEnter, handleMouseLeave, handleClickIcon } = this
+        const { handleMouseEnter, handleMouseLeave } = this
         const { id } = this.props
         const { pageShortcutList, moduleHeight, propData } = this.state
         return (
@@ -635,7 +636,7 @@ class IShortcutMenu extends Component<IDMCommonProp, IState> {
                         {propData.bottomContent === 'addApplication' && (
                             <div className='idm-shortcut-menu-add'>
                                 <i
-                                    onClick={() => handleClickIcon.bind(this)}
+                                    onClick={() => this.handleClickIcon()}
                                     className='oa-menu-iconfont oa-menu-zengjiatianjiajiahao idm-shortcut-menu-add-icon'
                                 ></i>
                             </div>
@@ -676,7 +677,7 @@ class IShortcutMenu extends Component<IDMCommonProp, IState> {
                     iconfontUrl={propData.iconfontUrl}
                     iconFontFamily={propData.iconFontFamily}
                     createMenuShow={this.state.createMenuShow}
-                    handleCreateMenuClose={this.handleCreateMenuClose.bind(this)}
+                    handleCreateMenuClose={() => this.handleCreateMenuClose()}
                 ></CreateMenu>
                 <CommonFunction
                     iconPrefix={propData.iconPrefix}
@@ -685,7 +686,7 @@ class IShortcutMenu extends Component<IDMCommonProp, IState> {
                     changeUrl={propData.cyChangeInterfaceUrl}
                     shortcutList={propData.cyListInterfaceUrl}
                     commonFunctionShow={this.state.commonFunctionShow}
-                    handleCommonFunctionClose={this.handleCommonFunctionClose.bind(this)}
+                    handleCommonFunctionClose={() => this.handleCommonFunctionClose()}
                 ></CommonFunction>
             </>
         )
