@@ -663,7 +663,7 @@ module.exports = function (webpackEnv) {
         },
       ].filter(Boolean),
     },
-    externals: undefined,
+    externals: process.env.NODE_ENV === 'production' ? externals : undefined,
     plugins: [
       new HtmlWebpackPlugin(
         Object.assign(
