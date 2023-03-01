@@ -350,22 +350,38 @@ class IShortcutMenu extends Component<IDMCommonProp, IState> {
         }
         switch (this.state.propData.dataSourceType) {
             case 'customInterface':
-                this.state.propData.interfaceUrl &&
-                    window.IDM.http
-                        .get(this.state.propData.interfaceUrl)
-                        .then((res) => {
-                            if (res.status === 200 && res.data.code === '200') {
-                                if(res.data.data.shortCut.length === 0) {
-                                    res.data.data.shortCut = [{ name: ' ', onlyShowPlaceholder: true }]
-                                }
-                                this.setState({ shortCutData: res.data.data }, () => {
-                                    this.sliceShortcutData(true)
-                                })
-                            } else {
-                                window.IDM.message.error(res.data.message)
-                            }
+            case 'dataSource':
+                if(this.state.propData?.dataSource?.[0]?.id) {
+                    IDM.datasource.request(this.state.propData.dataSource[0].id, {
+                        moduleObject: this.state.moduleObject,
+                        param: {}
+                    }).then(res => {
+                        if(!res || res.length === 0) {
+                            res = [{ name: ' ', onlyShowPlaceholder: true }]
+                            return
+                        }
+                        this.setState({ shortCutData: res }, () => {
+                            this.sliceShortcutData(true)
                         })
-                        .catch(function (error) {})
+                    })
+                }else {
+                    window.IDM.http
+                    .get('ctrl/api/frame/getShortCutInfo')
+                    .then((res) => {
+                        if (res.status === 200 && res.data.code === '200') {
+                            if(res.data.data.shortCut.length === 0) {
+                                res.data.data.shortCut = [{ name: ' ', onlyShowPlaceholder: true }]
+                            }
+                            this.setState({ shortCutData: res.data.data }, () => {
+                                this.sliceShortcutData(true)
+                            })
+                        } else {
+                            window.IDM.message.error(res.data.message)
+                        }
+                    })
+                    .catch(function (error) {})
+
+                }
                 break
             case 'pageCommonInterface':
                 //使用通用接口直接跳过，在setContextValue执行
@@ -614,7 +630,7 @@ class IShortcutMenu extends Component<IDMCommonProp, IState> {
     render() {
         const { handleMouseEnter, handleMouseLeave } = this
         const { id } = this.props
-        const { pageShortcutList, moduleHeight, propData } = this.state
+        const { pageShortcutList, moduleHeight, propData, moduleObject } = this.state
         return (
             <>
                 <div id={id} idm-ctrl='idm_module' className='idm-shortcut-menu' idm-ctrl-id={id}>
@@ -683,9 +699,9 @@ class IShortcutMenu extends Component<IDMCommonProp, IState> {
                     iconPrefix={propData.iconPrefix}
                     iconfontUrl={propData.iconfontUrl}
                     iconFontFamily={propData.iconFontFamily}
-                    changeUrl={propData.cyChangeInterfaceUrl}
-                    shortcutList={propData.cyListInterfaceUrl}
                     commonFunctionShow={this.state.commonFunctionShow}
+                    propData={propData}
+                    moduleObject={moduleObject}
                     handleCommonFunctionClose={() => this.handleCommonFunctionClose()}
                 ></CommonFunction>
             </>

@@ -7,9 +7,12 @@ interface IProp {
     iconfontUrl: string
     iconFontFamily: string
     iconPrefix: string
-    changeUrl: string
-    shortcutList: string
     commonFunctionShow: boolean
+    propData: {
+        cyListDataSource: Array<{id: string}>
+        cyChangeDataSource: Array<{id: string}>
+    }
+    moduleObject: Object
     handleCommonFunctionClose: (e: any) => void
 }
 interface IState {
@@ -39,8 +42,40 @@ const CommonFunction: React.FC<IProp> = (props) => {
         }
     }, [pageState.dxDataList, pageState.yxDataList])
     const initData = () => {
-        window.IDM.http
-            .get(props.shortcutList)
+        if(props.propData?.cyListDataSource?.[0]?.id) {
+            IDM.datasource.request(props.propData.cyListDataSource[0].id, {
+                moduleObject: props.moduleObject,
+                param: {}
+            }).then(res => {
+                let yxDataList = []
+                let dxDataList = res.menu
+                let lsDataList = JSON.stringify(res.menu)
+                if (res.short) {
+                    yxDataList = res.short
+                }
+                if (res.menu) {
+                    dxDataList.forEach((fitem, index) => {
+                        if (fitem.children && fitem.children.length > 0) {
+                            fitem.children.forEach((sitem, sindex) => {
+                                yxDataList.forEach((nitem: any, nindex) => {
+                                    if (sitem.id === nitem.menuId) {
+                                        fitem.children.splice(sindex, 1)
+                                    }
+                                })
+                            })
+                        }
+                    })
+                }
+                setPageState({
+                    ...pageState,
+                    yxDataList,
+                    dxDataList,
+                    lsDataList
+                })
+            })
+        }else{
+            window.IDM.http
+            .get('ctrl/shortcut/list')
             .then((res) => {
                 const respData = res.data
                 if (respData.code === '200') {
@@ -73,6 +108,8 @@ const CommonFunction: React.FC<IProp> = (props) => {
                 }
             })
             .catch((err) => {})
+        }
+        
     }
     const handleOk = () => {
         props.handleCommonFunctionClose(1)
@@ -210,14 +247,23 @@ const CommonFunction: React.FC<IProp> = (props) => {
             id: item.id,
             portalPattern: 'dsfa'
         }
-        window.IDM.http
-            .post(props.changeUrl, param)
+        if(props.propData?.cyChangeDataSource?.[0]?.id) {
+            IDM.datasource.request(props.propData.cyChangeDataSource[0].id, {
+                moduleObject: props.moduleObject,
+                param
+            }).then(() => {
+            })
+        }else {
+            window.IDM.http
+            .post('ctrl/shortcut/change', param)
             .then((res) => {
                 console.log(res.data)
             })
             .catch((err) => {
                 console.log(err)
             })
+        }
+        
     }
     const addCygn = (item) => {
         const dxDataList = pageState.dxDataList
@@ -248,8 +294,23 @@ const CommonFunction: React.FC<IProp> = (props) => {
             menuId: item.id,
             portalPattern: 'dsfa'
         }
-        window.IDM.http
-            .post(props.changeUrl, param)
+        if(props.propData?.cyChangeDataSource?.[0]?.id) {
+            IDM.datasource.request(props.propData.cyChangeDataSource[0].id, {
+                moduleObject: props.moduleObject,
+                param
+            }).then(res => {
+                yxObject.id = res
+                //追加已选
+                yxDataList.push(yxObject)
+                setPageState({
+                    ...pageState,
+                    dxDataList,
+                    yxDataList
+                })
+            })
+        }else {
+            window.IDM.http
+            .post('ctrl/shortcut/change', param)
             .then((res) => {
                 yxObject.id = res.data.data
                 //追加已选
@@ -263,6 +324,7 @@ const CommonFunction: React.FC<IProp> = (props) => {
             .catch((err) => {
                 console.log(err)
             })
+        }
     }
     return (
         <Modal

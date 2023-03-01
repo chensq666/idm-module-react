@@ -456,8 +456,8 @@
                     "desc": "通过这些方式去动态获取结果值显示成菜单内容",
                     "dictionary": [
                         {
-                            "label": "自定义接口",
-                            "value": "customInterface"
+                            "label": "数据源",
+                            "value": "dataSource"
                         },
                         {
                             "label": "页面统一接口",
@@ -468,16 +468,15 @@
                             "value": "customFunction"
                         }
                     ],
-                    "default": "customInterface"
+                    "default": "dataSource"
                 },
                 {
-                    "type": "input",
+                    "type": "dataSourceSelect",
                     "layoutType": "inline",
-                    "text": "接口地址",
-                    "bindKey": "interfaceUrl",
-                    "desc": "获取快捷菜单的接口地址",
-                    "default": "ctrl/api/frame/getShortCutInfo",
-                    "display": "@[dataSourceType=='customInterface']"
+                    "text": "数据源",
+                    "bindKey": "dataSource",
+                    "desc": "获取当前菜单的接口地址，如果不配置则使用ctrl/api/frame/getShortCutInfo接口请求",
+                    "display": "@[dataSourceType=='dataSource']"
                 },
                 {
                     "type": "input",
@@ -497,7 +496,7 @@
                     "desc": "根据接口返回数据格式指定结果集的字段，比如结果集名为resultData（自定义接口忽略）且它的值为{data:{filedName:[{\"text\":\"\",\"value\":\"\",\"check\":true}]}}，则这里应该填写data.filedName",
                     "default": "",
                     "placeholder": "示例：data.filedName 或者 [0].data[0].filedName",
-                    "display": "@[dataSourceType!='customFunction']"
+                    "display": "@[dataSourceType =='pageCommonInterface']"
                 },
                 {
                     "type": "actionSelect",
@@ -508,20 +507,18 @@
                     "multiple": false
                 },
                 {
-                    "type": "input",
+                    "type": "dataSourceSelect",
                     "layoutType": "block",
-                    "text": "常用功能列表接口地址",
-                    "bindKey": "cyListInterfaceUrl",
-                    "desc": "获取常用功能列表接口地址",
-                    "default": "ctrl/shortcut/list"
+                    "text": "常用功能列表数据源",
+                    "bindKey": "cyListDataSource",
+                    "desc": "获取常用功能列表数据源，如果不配置则使用ctrl/shortcut/list接口请求"
                 },
                 {
-                    "type": "input",
+                    "type": "dataSourceSelect",
                     "layoutType": "block",
-                    "text": "常用功能修改接口地址",
-                    "bindKey": "cyChangeInterfaceUrl",
-                    "desc": "常用功能修改接口地址",
-                    "default": "ctrl/shortcut/change"
+                    "text": "常用功能修改数据源",
+                    "bindKey": "cyChangeDataSource",
+                    "desc": "常用功能修改数据源，如果不配置则使用ctrl/shortcut/change接口请求，参数：{operation,menuId,portalPattern}"
                 },{
                     "type": "select",
                     "layoutType": "inline",
