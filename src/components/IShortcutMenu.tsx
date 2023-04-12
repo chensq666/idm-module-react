@@ -50,6 +50,17 @@ class IShortcutMenu extends Component<IDMCommonProp, IState> {
         // 防抖处理
         this.sliceShortcutData = _.debounce(this.sliceShortcutData, 400)
     }
+    // 获取用户自定义字体缩放比例
+    getUserFontSizeRatio() {
+        const user: any = IDM.user
+        return user?.getUserFontSizeRatio() || 1
+    }
+    setUserFontSizeRatio(styleObj, element: any){
+        const userFontSizeRatio = this.getUserFontSizeRatio()
+        if(element?.fontSize && element?.fontSizeUnit) {
+            styleObj['font-size'] = (element.fontSize ?? 0) * userFontSizeRatio + element.fontSizeUnit
+        }
+    }
     /**
      * 把属性转换成样式对象
      */
@@ -83,10 +94,11 @@ class IShortcutMenu extends Component<IDMCommonProp, IState> {
                         fontObj['height'] = element + 'px'
                         break
                     case 'iconSize':
-                        iconSizeObj['font-size'] = element + 'px'
+                        iconSizeObj['font-size'] = element * this.getUserFontSizeRatio() + 'px'
                         break
                     case 'font':
                         IDM.style.setFontStyle(fontObj, element)
+                        this.setUserFontSizeRatio(fontObj, element)
                         break
                     case 'bgColor':
                         if (element && element.hex8) {

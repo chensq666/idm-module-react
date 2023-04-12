@@ -475,7 +475,7 @@
                     "layoutType": "inline",
                     "text": "数据源",
                     "bindKey": "dataSource",
-                    "desc": "获取当前菜单的接口地址，如果不配置则使用ctrl/api/frame/getShortCutInfo接口请求",
+                    "desc": "获取当前菜单的数据源，如果不配置则使用ctrl/api/frame/getShortCutInfo接口请求",
                     "display": "@[dataSourceType=='dataSource']"
                 },
                 {
