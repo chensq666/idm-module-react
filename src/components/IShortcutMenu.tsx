@@ -236,7 +236,9 @@ class IShortcutMenu extends Component<IDMCommonProp, IState> {
     // 切割数组
     sliceShortcutData(isRefresh: any = false) {
         const list: Array<any> = []
-        const number = this.getOneLineNumber()
+        let number = this.getOneLineNumber()
+        if(number === 0) number = 6
+        console.log(this.state.shortCutData?.shortCut, number)
         this.state.shortCutData?.shortCut?.forEach((element, index) => {
             let key = Math.floor(index / number)
             if (!list[key]) {
@@ -354,7 +356,8 @@ class IShortcutMenu extends Component<IDMCommonProp, IState> {
      * 加载动态数据
      */
     initData() {
-        if (this.props.env === 'develop') {
+        if (this.props.env !== 'production') {
+            console.log(responseData.data)
             this.setState({ shortCutData: responseData.data }, () => {
                 this.sliceShortcutData(true)
             })
@@ -547,7 +550,7 @@ class IShortcutMenu extends Component<IDMCommonProp, IState> {
     }
 
     handleClickItem(item) {
-        if (this.props.env === 'develop' || item.onlyShowPlaceholder) return
+        if (this.props.env !== 'production' || item.onlyShowPlaceholder) return
         if (this.state.propData.triggerComponents.length === 0) {
             return window.IDM.message.warning('请配置快捷菜单的联动组件')
         }
