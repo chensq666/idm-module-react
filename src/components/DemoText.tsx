@@ -1,5 +1,6 @@
 import { Component } from 'react'
 import { commonParam } from '../utils/componentUtils'
+import { Button, Modal } from 'antd'
 interface IState extends IDMCommonState {}
 class DemoText extends Component<IDMCommonProp, IState> {
     constructor(rootProps: IDMCommonProp | Readonly<IDMCommonProp>) {
@@ -169,7 +170,7 @@ class DemoText extends Component<IDMCommonProp, IState> {
                 }
             }
         }
-        window.IDM.setStyleToPageHead(id, styleObject)
+        window.IDM.util.setStyleToPageHead(id, styleObject)
         this.initData()
     }
     /**
@@ -182,7 +183,11 @@ class DemoText extends Component<IDMCommonProp, IState> {
     /**
      * 加载动态数据
      */
-    initData() {}
+    initData() {
+        Modal.error({
+            title: '错误',
+        })
+    }
     /**
      * 提供父级组件调用的刷新prop数据组件
      */
@@ -212,6 +217,7 @@ class DemoText extends Component<IDMCommonProp, IState> {
         return (
             <div idm-ctrl='idm_module' id={id} idm-ctrl-id={id}>
                 <div>{propData.title}</div>
+                <Button>测试按钮</Button>
             </div>
         )
     }

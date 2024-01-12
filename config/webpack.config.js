@@ -226,7 +226,8 @@ module.exports = function (webpackEnv) {
         options: {
           lessOptions:{
             javascriptEnabled: true,
-            modifyVars: {}
+            modifyVars: {
+            }
           }
         }
       },
@@ -249,7 +250,10 @@ module.exports = function (webpackEnv) {
                 '@primary-color': 'rgb(0,82,204)',
                 // 不加@符号也行
                 // 'primary-color': 'rgb(0,82,204)',
-                '@font-size-base': '16px'
+                '@font-size-base': '16px',
+                'ant-prefix': 'idm-react-antd',
+                'iconfont-css-prefix': 'idm-react-antdicon',
+
               },
               javascriptEnabled: true,
             } : null
