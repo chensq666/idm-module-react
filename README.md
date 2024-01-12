@@ -9,6 +9,26 @@ IDM component development scaffold (React version)
 ```js
 npm i idm-react-antd -S
 ```
+修改package.json， 样式按需映入
+
+```json
+"babel": {
+    "presets": [
+      "react-app"
+    ],
+    "plugins": [
+      [
+        "import",
+        {
+          "libraryName": "idm-react-antd",
+          "libraryDirectory": "es",
+          "style": "css"
+        }
+      ]
+    ]
+  },
+```
+
 ### mobile
 建议使用[antd-mobile](https://mobile.ant.design/zh/guide/quick-start),
 ```js
