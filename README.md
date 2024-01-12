@@ -4,36 +4,9 @@ IDM component development scaffold (React version)
 [![OSCS Status](https://www.oscs1024.com/platform/badge/web-csq/idm-module-react.svg?size=small)](https://www.oscs1024.com/project/web-csq/idm-module-react?ref=badge_small)
 
 ## UI
-### PC
-为避免和`idm`产生样式冲突，建议使用UI组件库[idm-react-antd](https://github.com/web-csq/idm-react-antd/tree/idm-react-antd)
-```js
-npm i idm-react-antd -S
-```
-修改package.json， 样式按需映入
 
-```json
-"babel": {
-    "presets": [
-      "react-app"
-    ],
-    "plugins": [
-      [
-        "import",
-        {
-          "libraryName": "idm-react-antd",
-          "libraryDirectory": "es",
-          "style": "css"
-        }
-      ]
-    ]
-  },
-```
+为避免和`idm-core`中`antd-vue`样式类名冲突，修改了antd样式前缀
 
-### mobile
-建议使用[antd-mobile](https://mobile.ant.design/zh/guide/quick-start),
-```js
-npm i antd-mobile -S
-```
 
 ## 预览
 After start look at http://localhost:3000?className= `your component's className`
