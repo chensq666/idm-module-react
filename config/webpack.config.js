@@ -247,10 +247,7 @@ module.exports = function (webpackEnv) {
             sourceMap: true,
             lessOptions: preProcessor === 'less-loader' ? {
               modifyVars: {
-                '@primary-color': 'rgb(0,82,204)',
                 // 不加@符号也行
-                // 'primary-color': 'rgb(0,82,204)',
-                '@font-size-base': '16px',
                 'ant-prefix': 'idm-react-antd',
                 'iconfont-css-prefix': 'idm-react-antdicon',
 

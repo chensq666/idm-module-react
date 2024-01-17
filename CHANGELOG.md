@@ -1,3 +1,11 @@
+### 2024-01-17
+- ci:修改打包后目录名配置 build -> dist，适配idm zip脚本
+- ci:增加自动打包脚本 -> npm run dist
+- ci:增加ts.config配置ignoreDeprecations
+- perf:注册组件regComponent.js逻辑优化
+- perf:删除多余文件 src/utils src/api
+- chore:维护public/lib/idm.core.js -> IDM.style.*
+- chore:简化示例组件DemoText代码
 ### 2024-01-12
 - perf:优化组件库引入方式
 - fix: IDM方法报错

@@ -615,6 +615,291 @@
             }
         }
         /**
+         * 设置样式方法
+         */
+        const style = {
+            /**
+             * 设置border对象属性
+             * @param {*} styleObject
+             * @param {*} element
+             * @param {*} isImportant
+             */
+            setBorderStyle(styleObject, element, isImportant = false) {
+                const importantStr = isImportant ? ' !important' : ''
+                if (element.border.top.width > 0) {
+                    styleObject['border-top-width'] = element.border.top.width + element.border.top.widthUnit + importantStr
+                    styleObject['border-top-style'] = element.border.top.style + importantStr
+                    if (element.border.top.colors.hex8) {
+                        styleObject['border-top-color'] = IDM.hex8ToRgbaString(element.border.top.colors.hex8) + importantStr
+                    }
+                }
+                if (element.border.right.width > 0) {
+                    styleObject['border-right-width'] = element.border.right.width + element.border.right.widthUnit + importantStr
+                    styleObject['border-right-style'] = element.border.right.style + importantStr
+                    if (element.border.right.colors.hex8) {
+                        styleObject['border-right-color'] = IDM.hex8ToRgbaString(element.border.right.colors.hex8) + importantStr
+                    }
+                }
+                if (element.border.bottom.width > 0) {
+                    styleObject['border-bottom-width'] = element.border.bottom.width + element.border.bottom.widthUnit + importantStr
+                    styleObject['border-bottom-style'] = element.border.bottom.style + importantStr
+                    if (element.border.bottom.colors.hex8) {
+                        styleObject['border-bottom-color'] = IDM.hex8ToRgbaString(element.border.bottom.colors.hex8) + importantStr
+                    }
+                }
+                if (element.border.left.width > 0) {
+                    styleObject['border-left-width'] = element.border.left.width + element.border.left.widthUnit + importantStr
+                    styleObject['border-left-style'] = element.border.left.style + importantStr
+                    if (element.border.left.colors.hex8) {
+                        styleObject['border-left-color'] = IDM.hex8ToRgbaString(element.border.left.colors.hex8) + importantStr
+                    }
+                }
+            
+                styleObject['border-top-left-radius'] = element.radius.leftTop.radius + element.radius.leftTop.radiusUnit + importantStr
+                styleObject['border-top-right-radius'] = element.radius.rightTop.radius + element.radius.rightTop.radiusUnit + importantStr
+                styleObject['border-bottom-left-radius'] = element.radius.leftBottom.radius + element.radius.leftBottom.radiusUnit + importantStr
+                styleObject['border-bottom-right-radius'] =
+                    element.radius.rightBottom.radius + element.radius.rightBottom.radiusUnit + importantStr
+            },
+            /**
+             * 设置box对象属性
+             * @param {*} styleObject
+             * @param {*} element
+             * @param {*} isImportant
+             */
+            setBoxStyle(styleObject, element, isImportant = false) {
+                const importantStr = isImportant ? ' !important' : ''
+                if (element.marginTopVal) {
+                    styleObject['margin-top'] = element.marginTopVal + importantStr
+                }
+                if (element.marginRightVal) {
+                    styleObject['margin-right'] = element.marginRightVal + importantStr
+                }
+                if (element.marginBottomVal) {
+                    styleObject['margin-bottom'] = element.marginBottomVal + importantStr
+                }
+                if (element.marginLeftVal) {
+                    styleObject['margin-left'] = element.marginLeftVal + importantStr
+                }
+                if (element.paddingTopVal) {
+                    styleObject['padding-top'] = element.paddingTopVal + importantStr
+                }
+                if (element.paddingRightVal) {
+                    styleObject['padding-right'] = element.paddingRightVal + importantStr
+                }
+                if (element.paddingBottomVal) {
+                    styleObject['padding-bottom'] = element.paddingBottomVal + importantStr
+                }
+                if (element.paddingLeftVal) {
+                    styleObject['padding-left'] = element.paddingLeftVal + importantStr
+                }
+            },
+            /**
+             * 设置font对象属性
+             * @param {*} styleObject
+             * @param {*} element
+             * @param {*} isImportant
+             */
+            setFontStyle(styleObject, element, isImportant = false) {
+                const importantStr = isImportant ? ' !important' : ''
+                styleObject['font-family'] = element.fontFamily + importantStr
+                if (element.fontColors && element.fontColors.hex8) {
+                    styleObject['color'] = IDM.hex8ToRgbaString(element.fontColors.hex8) + importantStr
+                }
+                styleObject['font-weight'] = element.fontWeight && element.fontWeight.split(' ')[0] + importantStr
+                styleObject['font-style'] = element.fontStyle + importantStr
+                styleObject['font-size'] = element.fontSize + element.fontSizeUnit + importantStr
+                styleObject['line-height'] =
+                    element.fontLineHeight + (element.fontLineHeightUnit == '-' ? '' : element.fontLineHeightUnit) + importantStr
+                styleObject['text-align'] = element.fontTextAlign + importantStr
+                styleObject['text-decoration'] = element.fontDecoration + importantStr
+                styleObject['letter-spacing'] = element.fontLetterSpacing + element.fontLetterSpacingUnit + importantStr
+            },
+            
+            /**
+             * 批量生成css类名
+             * @param {前缀选择器} selectorPrefix
+             * @param {子级选择器} subSelectorArray
+             * @returns css 选择器字符串
+             */
+             generateClassName(selectorPrefix, subSelectorArray) {
+                const selectorStr = subSelectorArray.map(el => selectorPrefix + el).join(',')
+                if(selectorStr.startsWith('#')) return selectorStr.substr(1)
+                return selectorStr
+            },
+            setBackgroundStyle(styleObject, propData, keyObject, isImportant = false){
+                const importantStr = isImportant ? ' !important' : '';
+                let keyList = {
+                    bgSize: "bgSize",
+                    bgSizeWidth: "bgSizeWidth",
+                    bgSizeHeight: "bgSizeHeight",
+                    positionX: "positionX",
+                    positionY: "positionY",
+                    bgColor: "bgColor",
+                    bgImgUrl: "bgImgUrl",
+                    bgRepeat: "bgRepeat",
+                    bgAttachment: "bgAttachment",
+                };
+                if (keyObject) {
+                    IDM.mix(keyList, keyObject);
+                }
+                if (!propData) {
+                    return;
+                }
+                if (propData[keyList.bgSize] && propData[keyList.bgSize] == "custom") {
+                    styleObject["background-size"] =
+                        (propData[keyList.bgSizeWidth]
+                            ? propData[keyList.bgSizeWidth].inputVal + propData[keyList.bgSizeWidth].selectVal
+                            : "auto") +
+                        " " +
+                        (propData[keyList.bgSizeHeight]
+                            ? propData[keyList.bgSizeHeight].inputVal + propData[keyList.bgSizeHeight].selectVal
+                            : "auto") + importantStr;
+                } else if (propData[keyList.bgSize]) {
+                    styleObject["background-size"] = propData[keyList.bgSize] + importantStr;
+                }
+                if (propData[keyList.positionX] && propData[keyList.positionX].inputVal) {
+                    styleObject["background-position-x"] =
+                        propData[keyList.positionX].inputVal + propData[keyList.positionX].selectVal + importantStr;
+                }
+                if (propData[keyList.positionY] && propData[keyList.positionY].inputVal) {
+                    styleObject["background-position-y"] =
+                        propData[keyList.positionY].inputVal + propData[keyList.positionY].selectVal + importantStr;
+                }
+                for (const keyName in keyList) {
+                    const key = keyList[keyName];
+                    if (propData.hasOwnProperty.call(propData, key)) {
+                        const element = propData[key];
+                        if (!element && element !== false && element !== 0) {
+                            continue;
+                        }
+                        switch (keyName) {
+                            case "bgColor":
+                                if (element && element.hex8) {
+                                    styleObject["background-color"] = IDM.hex8ToRgbaString(element.hex8) + importantStr;
+                                }
+                                break;
+                            case "bgImgUrl":
+                                styleObject["background-image"] = `url(${window.IDM.url.getWebPath(
+                                    element
+                                )})` + importantStr;
+                                break;
+                            case "bgRepeat":
+                                //平铺模式
+                                styleObject["background-repeat"] = element + importantStr;
+                                break;
+                            case "bgAttachment":
+                                //背景模式
+                                styleObject["background-attachment"] = element + importantStr;
+                                break;
+                        }
+                    }
+                }
+            },
+            setMultiBackgroundStyle(styleObject, element, isImportant = false){
+                if(!element||(element&&element.bgList&&element.bgList.length==0)){
+                    return;
+                }
+                const importantStr = isImportant ? ' !important' : ''
+                if(element.bgAttachment){
+                    styleObject["background-attachment"] = element.bgAttachment + importantStr;
+                }
+                let backgrounds = [];
+                if(IDM.type(element.bgList)!="array"){
+                    return;
+                }
+                for (let index = 0; index < element.bgList.length; index++) {
+                    const item = element.bgList[index];
+                    if((item.type=="image"&&!item.imgurl)||(item.type=="gradient"&&!item.gradientObject?.style)){
+                        continue;
+                    }
+                    let background=[];
+                    background.push(item.type=="image"?"url("+IDM.url.getWebPath(item.imgurl)+")":item.gradientObject.style["background-image"])
+                    let _size = item.size||((item.width==0||item.width?item.width+(item.widthUnit||"%"):"auto")+" "+(item.height==0||item.height?item.height+(item.heightUnit||"%"):"auto"));
+                    if(_size){
+                        _size="/"+_size;
+                    }
+                    background.push(item.left+(item.leftUnit||"%")+" "+item.top+(item.topUnit||"%")+_size)
+                    if(item.repeat){
+                        background.push(item.repeat)
+                    }
+                    backgrounds.push(background.join(" "));
+                }
+                if(backgrounds.length){
+                    styleObject["background"]=backgrounds.join(",") + importantStr;
+                }
+            },
+            setFilterStyle(styleObject, propData, keyObject, isImportant = false) {
+                const importantStr = isImportant ? ' !important' : ''
+                //开启滤镜，对比度(%)，饱和度(%)，亮度(%)，透明度(%)，灰度(%)，色相(°)，反转(%)，模糊(px)
+                //["openFilter", "contrast", "saturate", "brightness", "opacity", "grayscale", "hueRotate", "invert", "blur"]
+                let keyList = {
+                    openFilter:"openFilter",
+                    contrast:"contrast",
+                    saturate:"saturate",
+                    brightness:"brightness",
+                    opacity:"opacity",
+                    grayscale:"grayscale",
+                    hueRotate:"hueRotate",
+                    invert:"invert",
+                    blur:"blur",
+                };
+                if (keyObject) {
+                    IDM.mix(keyList,keyObject);
+                }
+                if(!propData){
+                    return;
+                }
+                if(propData.openFilter!==true){
+                    return;
+                }
+                let filterList = [];
+                for (const keyName in keyList) {
+                    const key = keyList[keyName];
+                    if (propData.hasOwnProperty.call(propData, key)) {
+                        const element = propData[key];
+                        if (!element && element !== false && element !== 0) {
+                            continue;
+                        }
+                        switch (keyName) {
+                            case "openFilter":
+                                if(element===false){
+                                    return;
+                                }
+                                break;
+                            case "contrast":
+                                filterList.push(`contrast(${element}%)`)
+                                break;
+                            case "saturate":
+                                filterList.push(`saturate(${element}%)`)
+                                break;
+                            case "brightness":
+                                filterList.push(`brightness(${element}%)`)
+                                break;
+                            case "opacity":
+                                filterList.push(`opacity(${element}%)`)
+                                break;
+                            case "grayscale":
+                                filterList.push(`grayscale(${element}%)`)
+                                break;
+                            case "hueRotate":
+                                filterList.push(`hue-rotate(${element}deg)`)
+                                break;
+                            case "invert":
+                                filterList.push(`invert(${element}%)`)
+                                break;
+                            case "blur":
+                                filterList.push(`blur(${element}px)`)
+                                break;
+                        }
+                    }
+                }
+                if(filterList.length){
+                    styleObject["filter"] = filterList.join(" ")+importantStr;
+                }
+            }
+        }
+        /**
          * 获取数据http
          */
         var http={
@@ -1275,6 +1560,7 @@
             util: util,
             url:url,
             http:http,
+            style: style,
             user:user,
             app:app,
             theme:theme,
@@ -3657,7 +3943,7 @@
     
     window.qs = window.Qs;
     window.IDM={
-        // ...idmFun().util,
+        ...idmFun().util,
         util:idmFun().util,
         setting:setting,
         url:idmFun().url,
@@ -3668,6 +3954,7 @@
         watermark:idmFun().watermark,
         validate:idmFun().validate,
         message:idmMessage(),
+        style: idmFun().style,
         express: express,
         layer:layer
     }

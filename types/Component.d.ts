@@ -42,4 +42,11 @@ interface IDMReactComponent {
     idmGetContextValue(): any
     reload(): void
     setContextValue(object: any): void
+    getContextValue(object: any): void
+    propDataWatchHandle(object: any): void
+}
+
+interface IDMConfigJsonData {
+    version: string,
+    module
 }
