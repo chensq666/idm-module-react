@@ -53,13 +53,42 @@
         var hasOwnProperty = Object.prototype.hasOwnProperty;
         var uuidCharts = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".split("");
 
-        $types.forEach(function(elem) {
+        $types.forEach(elem => {
             class2type["[object " + elem + "]"] = elem.toLowerCase();
         });
         /**
          * 公共方法
          */
         var util = {
+            /**
+            * 通用的获取表达式匹配后的结果
+            * 例1：IDM.getExpressData("data.dataFieldName",{data:{dataFieldName:"1234"}})  // => 1234
+            * 例2：IDM.getExpressData("_idm_[0].data.dataFieldName",[{data:{dataFieldName:"1234"}}])  // => 1234
+            * 例3：IDM.getExpressData("_idm_","这里是字符串1234")  // => 这里是字符串1234
+            * 例4：IDM.getExpressData("mydata[0].data.dataFieldName",[{data:{dataFieldName:"1234"}}],"mydata")  // => 1234
+            * @param {*} expressStr 表达式字符串，不包含@[]
+            * @param {*} objectData 表达式所使用的对象数据，如果为object类型则可直接使用，如果为数组或者其他类型则会默认给添加到 _idm_ 字段中，因此表达式需要带上 _idm_.dataFieldName 这样
+            * @param {*} defaultPrefix 为数组或者其他类型的默认字段名称，默认为 _idm_ ，如果需要定义其他可以传此参数
+            * @returns 
+            */
+            getExpressData: function (expressStr, objectData, defaultPrefix) {
+                //给defaultValue设置dataFiled的值
+                var resultData;
+                if (expressStr) {
+                    var dataObject = { IDM: window.IDM, window };
+                    if (IDM.type(objectData) == "object") {
+                        //直接合并
+                        Object.assign(dataObject, objectData);
+                    } else {
+                        dataObject[defaultPrefix || "_idm_"] = objectData;
+                    }
+                    resultData = window.IDM.express.replace(
+                        "@[" + expressStr + "]",
+                        dataObject
+                    );
+                }
+                return resultData;
+            },
             /**
              * 更新vue的data
              * @param {*} _this vue对象
@@ -71,7 +100,7 @@
                 if(!_this||!dataName||!attrData||typeof attrData!="object"){
                     return;
                 }
-                Object.keys(attrData).forEach(function(key){
+                Object.keys(attrData).forEach(key=>{
                     _this.set(this[dataName],key,attrData[key])
                 })
             },
@@ -96,18 +125,35 @@
             /**
              * 把object样式转换为style标签样式并添加到head的标签中
              */
-            setStyleToPageHead:function(id,object){
-              var style = "";
-              for (var key in object) {
-                if (Object.hasOwnProperty.call(object, key)) {
-                  var element = object[key];
-                  style+=key+':'+element+';'
+            setStyleToPageHead:function(selector,object){
+                const oldStyleElement = this.findStyleElement(selector)
+                let newStyleStr = "";
+                for (const key in object) {
+                  if (Object.hasOwnProperty.call(object, key)) {
+                    const element = object[key];
+                    newStyleStr+=`${key}:${element};`
+                  }
                 }
-              }
-              var ele=document.createElement("style");
-              ele.setAttribute("from",id);
-              ele.innerHTML=id.indexOf(".")==0?"":"#"+id+style;
-              document.getElementsByTagName('head')[0].appendChild(ele)
+                newStyleStr = `${selector.indexOf(".")==0?"":"#"}${selector}{${newStyleStr}}`;
+                if(oldStyleElement){
+                  if(oldStyleElement.innerHTML !== newStyleStr){
+                      oldStyleElement.innerHTML = newStyleStr
+                  }
+                  return
+                }
+                const newStyleElement=document.createElement("style");
+                newStyleElement.setAttribute("from",selector);
+                newStyleElement.innerHTML=newStyleStr
+                document.getElementsByTagName('head')[0].appendChild(newStyleElement)
+            },
+            /**
+             * 根据from找style元素
+             */
+            findStyleElement(selector) {
+                const styles = document.getElementsByTagName('style')
+                const styleElement = Array.prototype.find.call(styles, el => el.getAttribute("from") === selector)
+                if(styleElement) return styleElement
+                return false
             },
             /**
              * 获取浏览器可视区域宽高方法
@@ -367,6 +413,52 @@
                         s: second
                     })[matches];
                 });
+            },
+            /**
+             * 获取cookie
+             * @param {*} t 
+             * @returns 
+             */
+            getCookie:function(t){
+                for(var i=document.cookie.split("; "),e=0;e<i.length;e++){
+                    var s=i[e].split("=");
+                    if(t==s[0])
+                    return s[1]
+                }
+                return null
+            },
+            /**
+             * hex8转换为rgba的字符串格式
+             * @returns 
+             */
+            hex8ToRgbaString:function(hex){
+                if (hex.length < 9 || hex[0] != '#') return hex
+                let r = parseInt(hex.slice(1, 3), 16)
+                let g = parseInt(hex.slice(3, 5), 16)
+                let b = parseInt(hex.slice(5, 7), 16)
+                let a = parseInt(hex.slice(7, 9), 16)/255
+                let res = 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')'
+                return res
+            },
+            /**
+             * hex8转换为rgba对象格式
+             * {
+                "r": 218,
+                "g": 12,
+                "b": 12,
+                "a": 1
+            }
+             * @returns 
+             */
+            hex8ToRgbaObject:function(hex){
+                if (hex.length < 9 || hex[0] != '#') return hex
+                let r = parseInt(hex.slice(1, 3), 16)
+                let g = parseInt(hex.slice(3, 5), 16)
+                let b = parseInt(hex.slice(5, 7), 16)
+                let a = parseInt(hex.slice(7, 9), 16)/255
+                return {
+                    r,g,b,a
+                }
             }
         }
         /**
@@ -387,9 +479,10 @@
                 if (!url) {
                     return "";
                 }
-                var isHtmlDir = false;
-                var isAssetsDir = false;
-                var isModuleDir = false;
+                let isHtmlDir = false;
+                let isAssetsDir = false;
+                let isModuleDir = false;
+                const base64Reg = RegExp(/^data:(image|audio)\/.*;base64,/)
                 if (url.startsWiths("~")) {
                     isHtmlDir = true;
                     url = url.substr(1);
@@ -399,6 +492,10 @@
                 } else if (url.startsWiths("@")) {
                     isModuleDir = true;
                     url = url.substr(1);
+                } else if (base64Reg.test(url)) {
+                    return url
+                } else if (url.startsWiths(rootPath || IDM.setting.webRoot.default)){
+                    return url
                 }
                 if (url.startsWiths("/")) {
                     url = url.substr(1);
@@ -412,7 +509,7 @@
                 } else if (isModuleDir) {
                     return IDM.setting.webRoot.isModuleDir + url;
                 } else {
-                    var root = rootPath || IDM.setting.webRoot.default;
+                    let root = rootPath || IDM.setting.webRoot.default;
                     return root + url;
                 }
             },
@@ -472,14 +569,14 @@
                 return url;
             },
             stringify:function(params, options) {
-                var defaultOptions = {
+                let defaultOptions = {
                     arrayFormat: "repeat"
                 };
                 options = IDM.mix({}, defaultOptions, options);
                 return qs.stringify(params, options);
             },
             parse:function(str, options) {
-                var defaultOptions = {
+                let defaultOptions = {
                     arrayFormat: "repeat"
                 };
                 options = IDM.mix({}, defaultOptions, options);
@@ -490,7 +587,7 @@
              * @param url
              */
             analyzing:function(url) {
-                var i;
+                let i;
                 if (!url || url === '') {
                     return {
                         url: null,
@@ -505,10 +602,10 @@
                     };
                 }
                 url = decodeURIComponent(url);
-                var parse_url = /^(?:([A-Za-z]+):)?(\/{0,3})([0-9.\-A-Za-z]+)(?::(\d+))?(?:\/([^?#]*))?(?:\?([^#]*))?(?:#(.*))?$/;
-                var _result = parse_url.exec(url);
-                var names = ['url', 'protocol', 'slash', 'host', 'port', 'path', 'queryString', 'hash'];
-                var result = {};
+                const parse_url = /^(?:([A-Za-z]+):)?(\/{0,3})([0-9.\-A-Za-z]+)(?::(\d+))?(?:\/([^?#]*))?(?:\?([^#]*))?(?:#(.*))?$/;
+                const _result = parse_url.exec(url);
+                const names = ['url', 'protocol', 'slash', 'host', 'port', 'path', 'queryString', 'hash'];
+                const result = {};
                 for (i = 0; i < names.length; i++) {
                     result[names[i]] = _result[i];
                 }
@@ -518,12 +615,12 @@
                 if (!result.port) {
                     result.port = result.protocol === 'http:' ? '80' : result.protocol === 'https:' ? 8080 : '';
                 }
-                var _query = {};
+                const _query = {};
                 result.queryString = result.queryString || '';
-                var query = result.queryString.split('&');
+                const query = result.queryString.split('&');
                 for (i = 0; i < query.length; i++) {
-                    var item = query[i].trim();
-                    var _i = item.indexOf('='),
+                    const item = query[i].trim();
+                    let _i = item.indexOf('='),
                         _v = '',
                         _k = '';
                     if (item !== '') {
@@ -567,7 +664,7 @@
             根据环境的不同获取对应的url
             */
             getContextWebUrl:function(url){
-                var NODE_ENV  = process.env.NODE_ENV
+                const { NODE_ENV } = process.env
                 if(NODE_ENV =="production"){
                     return IDM.url.getURLRoot()+url
                 }else{
@@ -727,177 +824,6 @@
                 if(selectorStr.startsWith('#')) return selectorStr.substr(1)
                 return selectorStr
             },
-            setBackgroundStyle(styleObject, propData, keyObject, isImportant = false){
-                const importantStr = isImportant ? ' !important' : '';
-                let keyList = {
-                    bgSize: "bgSize",
-                    bgSizeWidth: "bgSizeWidth",
-                    bgSizeHeight: "bgSizeHeight",
-                    positionX: "positionX",
-                    positionY: "positionY",
-                    bgColor: "bgColor",
-                    bgImgUrl: "bgImgUrl",
-                    bgRepeat: "bgRepeat",
-                    bgAttachment: "bgAttachment",
-                };
-                if (keyObject) {
-                    IDM.mix(keyList, keyObject);
-                }
-                if (!propData) {
-                    return;
-                }
-                if (propData[keyList.bgSize] && propData[keyList.bgSize] == "custom") {
-                    styleObject["background-size"] =
-                        (propData[keyList.bgSizeWidth]
-                            ? propData[keyList.bgSizeWidth].inputVal + propData[keyList.bgSizeWidth].selectVal
-                            : "auto") +
-                        " " +
-                        (propData[keyList.bgSizeHeight]
-                            ? propData[keyList.bgSizeHeight].inputVal + propData[keyList.bgSizeHeight].selectVal
-                            : "auto") + importantStr;
-                } else if (propData[keyList.bgSize]) {
-                    styleObject["background-size"] = propData[keyList.bgSize] + importantStr;
-                }
-                if (propData[keyList.positionX] && propData[keyList.positionX].inputVal) {
-                    styleObject["background-position-x"] =
-                        propData[keyList.positionX].inputVal + propData[keyList.positionX].selectVal + importantStr;
-                }
-                if (propData[keyList.positionY] && propData[keyList.positionY].inputVal) {
-                    styleObject["background-position-y"] =
-                        propData[keyList.positionY].inputVal + propData[keyList.positionY].selectVal + importantStr;
-                }
-                for (const keyName in keyList) {
-                    const key = keyList[keyName];
-                    if (propData.hasOwnProperty.call(propData, key)) {
-                        const element = propData[key];
-                        if (!element && element !== false && element !== 0) {
-                            continue;
-                        }
-                        switch (keyName) {
-                            case "bgColor":
-                                if (element && element.hex8) {
-                                    styleObject["background-color"] = IDM.hex8ToRgbaString(element.hex8) + importantStr;
-                                }
-                                break;
-                            case "bgImgUrl":
-                                styleObject["background-image"] = `url(${window.IDM.url.getWebPath(
-                                    element
-                                )})` + importantStr;
-                                break;
-                            case "bgRepeat":
-                                //平铺模式
-                                styleObject["background-repeat"] = element + importantStr;
-                                break;
-                            case "bgAttachment":
-                                //背景模式
-                                styleObject["background-attachment"] = element + importantStr;
-                                break;
-                        }
-                    }
-                }
-            },
-            setMultiBackgroundStyle(styleObject, element, isImportant = false){
-                if(!element||(element&&element.bgList&&element.bgList.length==0)){
-                    return;
-                }
-                const importantStr = isImportant ? ' !important' : ''
-                if(element.bgAttachment){
-                    styleObject["background-attachment"] = element.bgAttachment + importantStr;
-                }
-                let backgrounds = [];
-                if(IDM.type(element.bgList)!="array"){
-                    return;
-                }
-                for (let index = 0; index < element.bgList.length; index++) {
-                    const item = element.bgList[index];
-                    if((item.type=="image"&&!item.imgurl)||(item.type=="gradient"&&!item.gradientObject?.style)){
-                        continue;
-                    }
-                    let background=[];
-                    background.push(item.type=="image"?"url("+IDM.url.getWebPath(item.imgurl)+")":item.gradientObject.style["background-image"])
-                    let _size = item.size||((item.width==0||item.width?item.width+(item.widthUnit||"%"):"auto")+" "+(item.height==0||item.height?item.height+(item.heightUnit||"%"):"auto"));
-                    if(_size){
-                        _size="/"+_size;
-                    }
-                    background.push(item.left+(item.leftUnit||"%")+" "+item.top+(item.topUnit||"%")+_size)
-                    if(item.repeat){
-                        background.push(item.repeat)
-                    }
-                    backgrounds.push(background.join(" "));
-                }
-                if(backgrounds.length){
-                    styleObject["background"]=backgrounds.join(",") + importantStr;
-                }
-            },
-            setFilterStyle(styleObject, propData, keyObject, isImportant = false) {
-                const importantStr = isImportant ? ' !important' : ''
-                //开启滤镜，对比度(%)，饱和度(%)，亮度(%)，透明度(%)，灰度(%)，色相(°)，反转(%)，模糊(px)
-                //["openFilter", "contrast", "saturate", "brightness", "opacity", "grayscale", "hueRotate", "invert", "blur"]
-                let keyList = {
-                    openFilter:"openFilter",
-                    contrast:"contrast",
-                    saturate:"saturate",
-                    brightness:"brightness",
-                    opacity:"opacity",
-                    grayscale:"grayscale",
-                    hueRotate:"hueRotate",
-                    invert:"invert",
-                    blur:"blur",
-                };
-                if (keyObject) {
-                    IDM.mix(keyList,keyObject);
-                }
-                if(!propData){
-                    return;
-                }
-                if(propData.openFilter!==true){
-                    return;
-                }
-                let filterList = [];
-                for (const keyName in keyList) {
-                    const key = keyList[keyName];
-                    if (propData.hasOwnProperty.call(propData, key)) {
-                        const element = propData[key];
-                        if (!element && element !== false && element !== 0) {
-                            continue;
-                        }
-                        switch (keyName) {
-                            case "openFilter":
-                                if(element===false){
-                                    return;
-                                }
-                                break;
-                            case "contrast":
-                                filterList.push(`contrast(${element}%)`)
-                                break;
-                            case "saturate":
-                                filterList.push(`saturate(${element}%)`)
-                                break;
-                            case "brightness":
-                                filterList.push(`brightness(${element}%)`)
-                                break;
-                            case "opacity":
-                                filterList.push(`opacity(${element}%)`)
-                                break;
-                            case "grayscale":
-                                filterList.push(`grayscale(${element}%)`)
-                                break;
-                            case "hueRotate":
-                                filterList.push(`hue-rotate(${element}deg)`)
-                                break;
-                            case "invert":
-                                filterList.push(`invert(${element}%)`)
-                                break;
-                            case "blur":
-                                filterList.push(`blur(${element}px)`)
-                                break;
-                        }
-                    }
-                }
-                if(filterList.length){
-                    styleObject["filter"] = filterList.join(" ")+importantStr;
-                }
-            }
         }
         /**
          * 获取数据http
@@ -906,7 +832,7 @@
 
         }
         if(axios){
-            var Axios = axios.create({
+            const Axios = axios.create({
                 baseURL: "",
                 timeout: 20000,
                 responseType: "json",
@@ -915,12 +841,12 @@
                     "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
                     Code: "idm"
                 },
-                withCredentials: true
+                withCredentials: false
             });
         
-            var DEFAULT_ERROR = "网络存在异常";
+            const DEFAULT_ERROR = "网络存在异常";
         
-            Axios.interceptors.response.use(function(response) {
+            Axios.interceptors.response.use(response => {
                 //处理IE9请求json时不能自动转化成对象的问题
                 if (response.data == null && response.config.responseType === "json" && response.request.responseText != null) {
                     try {
@@ -932,56 +858,56 @@
                 return response;
             });
         
-            // Promise.prototype.done = function(fn) {
-            //     function responseHanlder(response) {
-            //         if (response.headers) {
-            //             var result = response.data || {};
-            //             //success、state、message这3个属性都存在表示是我们自己应用的程序
-            //             if (util.isDef(result.success) && util.isDef(result.state) && util.isDef(result.message)) {
-            //                 if (result.state == "20001" && !result.message) {
-            //                     result.message = DEFAULT_ERROR;
-            //                 }
-            //                 return fn(result);
-            //             } else {
-            //                 return fn(result);
-            //             }
-            //         } else {
-            //             var result = response;
-            //             //success、state、message这3个属性都存在表示是我们自己应用的程序
-            //             if (util.isDef(result.success) && util.isDef(result.state) && util.isDef(result.message)) {
-            //                 if (result.state == "20001" && !result.message) {
-            //                     result.message = DEFAULT_ERROR;
-            //                 }
-            //                 return fn(result);
-            //             } else {
-            //                 return fn(result);
-            //             }
-            //         }
+            Promise.prototype.done = function(fn) {
+                function responseHanlder(response) {
+                    if (response.headers) {
+                        var result = response.data || {};
+                        //success、state、message这3个属性都存在表示是我们自己应用的程序
+                        if (util.isDef(result.success) && util.isDef(result.state) && util.isDef(result.message)) {
+                            if (result.state == "20001" && !result.message) {
+                                result.message = DEFAULT_ERROR;
+                            }
+                            return fn(result);
+                        } else {
+                            return fn(result);
+                        }
+                    } else {
+                        var result = response;
+                        //success、state、message这3个属性都存在表示是我们自己应用的程序
+                        if (util.isDef(result.success) && util.isDef(result.state) && util.isDef(result.message)) {
+                            if (result.state == "20001" && !result.message) {
+                                result.message = DEFAULT_ERROR;
+                            }
+                            return fn(result);
+                        } else {
+                            return fn(result);
+                        }
+                    }
         
-            //     }
-            //     var r = this.then(function(response)  {
-            //         return responseHanlder(response);
-            //     });
-            //     return r;
-            // };
+                }
+                let r = this.then(response => {
+                    return responseHanlder(response);
+                });
+                return r;
+            };
         
-            // Promise.prototype.error = function(fn) {
-            //     function errorHandler(error) {
-            //         fn({
-            //             capture: false,
-            //             state: -1,
-            //             message: DEFAULT_ERROR,
-            //             error: error
-            //         });
-            //     }
-            //     return this.catch(function(error) {
-            //         errorHandler(error);
-            //     });
-            // };
+            Promise.prototype.error = function(fn) {
+                function errorHandler(error) {
+                    fn({
+                        capture: false,
+                        state: -1,
+                        message: DEFAULT_ERROR,
+                        error: error
+                    });
+                }
+                return this.catch(error => {
+                    errorHandler(error);
+                });
+            };
         
-            // Promise.prototype.always = function(fn) {
-            //     this.finally(fn);
-            // };
+            Promise.prototype.always = function(fn) {
+                this.finally(fn);
+            };
         
             http.get = function(path, params, options, rootPath) {
                 if (IDM.type(options) == 'string') {
@@ -989,7 +915,7 @@
                     options = null;
                 }
                 path = IDM.url.getWebPath(path, rootPath);
-                var opts = {
+                let opts = {
                     params: params,
                     paramsSerializer: function(params) {
                         return qs.stringify(params, {
@@ -998,7 +924,7 @@
                     }
                 };
                 opts = IDM.mix(opts, options || {});
-                var p = Axios.get(path, opts);
+                let p = Axios.get(path, opts);
                 return p;
             }
         
@@ -1008,22 +934,22 @@
                     options = null;
                 }
                 path = IDM.url.getWebPath(path, rootPath);
-                var configContentType = options && options.headers && options.headers["Content-Type"] ? options.headers["Content-Type"] : "";
+                let configContentType = options && options.headers && options.headers["Content-Type"] ? options.headers["Content-Type"] : "";
                 if (configContentType.indexOf('application/json')==-1) {
                     params = qs.stringify(params);
                 }
                 // if (configContentType !== "multipart/form-data") {
                 //     params = qs.stringify(params);
                 // }
-                var opts = {};
+                let opts = {};
                 opts = IDM.mix(opts, options || {});
-                var p = Axios.post(path, params, opts);
+                let p = Axios.post(path, params, opts);
                 return p;
             }
         
             http.all = function(arr) {
-                return axios.all(arr).then(axios.spread(function(res) {
-                    var list = res.map(function(item){return item.data} );
+                return axios.all(arr).then(axios.spread((...res) => {
+                    const list = res.map(item => item.data);
                     return list;
                 }))
             }
@@ -1033,7 +959,7 @@
                     rootPath = options;
                     options = null;
                 }
-                var opts = {
+                let opts = {
                     headers: {
                         "Content-Type": "multipart/form-data"
                     }
@@ -1041,11 +967,11 @@
                 opts = IDM.mix(opts, options || {});
                 var forms = new FormData();
                 forms.append("file", file);
-                for (var k in params) {
+                for (let k in params) {
                     forms.append(k, params[k]);
                 }
                 path = IDM.url.getWebPath(path, rootPath);
-                var p = Axios.post(path, forms, opts);
+                let p = Axios.post(path, forms, opts);
                 return p;
             }
         
@@ -1053,28 +979,28 @@
             window.$$allLoadFilesArray = [];
         
             http.importFiles = function(files) {
-                var states = [];
-                var loadFiles = IDM.type(files) == "array" ? files.slice(0) : [files];
-                // var promise = new Promise(function(resolve) {
-                //     recursionLoad(function() {
-                //         resolve(states);
-                //     });
-                // });
+                let states = [];
+                let loadFiles = IDM.type(files) == "array" ? files.slice(0) : [files];
+                let promise = new Promise(resolve => {
+                    recursionLoad(() => {
+                        resolve(states);
+                    });
+                });
         
                 function recursionLoad(callback) {
-                    var f = loadFiles.shift();
+                    let f = loadFiles.shift();
                     if (f) {
                         loadFile(f)
-                            .then(function(result) {
+                            .then(result => {
                                 states.push(result);
                                 result = null;
                             })
-                            .catch(function(result) {
+                            .catch(result => {
                                 http.importFiles.kill(result.src, true);
                                 states.push(result);
                                 result = null;
                             })
-                            .finally(function() {
+                            .finally(() => {
                                 recursionLoad(callback);
                             });
                     } else {
@@ -1094,67 +1020,67 @@
             }
         
             http.loadFile = function(url) {
-                var type = IDM.http.getFileType(url);
-                var fileObj = null;
-                // var promise = new Promise(function(resolve, reject) {
-                //     if (!window.$$allLoadFiles[url]) {
-                //         if (type == ".js") {
-                //             fileObj = document.createElement("script");
-                //             fileObj.src = url;
-                //         } else if (type == ".css") {
-                //             fileObj = document.createElement("link");
-                //             fileObj.href = url;
-                //             fileObj.type = "text/css";
-                //             fileObj.rel = "stylesheet";
-                //         }
-                //         if (fileObj) {
-                //             fileObj.__views__ = [];
-                //             fileObj.onload = fileObj.onreadystatechange = function() {
-                //                 if (!this.readyState || "loaded" === this.readyState || "complete" === this.readyState) {
-                //                     window.$$allLoadFiles[url].state = "success";
-                //                     resolve(window.$$allLoadFiles[url]);
-                //                     _.each(window.$$allLoadFiles[url].promiseList, function(p) {
-                //                         p.resolve(window.$$allLoadFiles[url]);
-                //                     });
-                //                 }
-                //             };
-                //             fileObj.onerror = function() {
-                //                 window.$$allLoadFiles[url].state = "error";
-                //                 _.each(window.$$allLoadFiles[url].promiseList, function(p){
-                //                     p.reject(window.$$allLoadFiles[url]);
-                //                 });
-                //             };
-                //             if (!window.$$allLoadFiles[url]) {
-                //                 window.$$allLoadFiles[url] = {
-                //                     elem: fileObj,
-                //                     state: "pending",
-                //                     type: type,
-                //                     src: url,
-                //                     promiseList: [{ resolve: resolve, reject: reject }]
-                //                 };
-                //                 window.$$allLoadFilesArray.push(url);
-                //                 document.getElementsByTagName("BODY")[0].appendChild(fileObj);
-                //             }
-                //         }
-                //     } else {
-                //         window.$$allLoadFilesArray.push(url);
-                //         var state = window.$$allLoadFiles[url].state;
-                //         if (state == "pending") {
-                //             window.$$allLoadFiles[url].promiseList.push({ resolve: resolve, reject: reject });
-                //         } else if (state == "success") {
-                //             resolve(window.$$allLoadFiles[url]);
-                //         } else {
-                //             reject(window.$$allLoadFiles[url]);
-                //         }
-                //     }
-                // });
+                let type = IDM.http.getFileType(url);
+                let fileObj = null;
+                let promise = new Promise((resolve, reject) => {
+                    if (!window.$$allLoadFiles[url]) {
+                        if (type == ".js") {
+                            fileObj = document.createElement("script");
+                            fileObj.src = url;
+                        } else if (type == ".css") {
+                            fileObj = document.createElement("link");
+                            fileObj.href = url;
+                            fileObj.type = "text/css";
+                            fileObj.rel = "stylesheet";
+                        }
+                        if (fileObj) {
+                            fileObj.__views__ = [];
+                            fileObj.onload = fileObj.onreadystatechange = function() {
+                                if (!this.readyState || "loaded" === this.readyState || "complete" === this.readyState) {
+                                    window.$$allLoadFiles[url].state = "success";
+                                    resolve(window.$$allLoadFiles[url]);
+                                    _.each(window.$$allLoadFiles[url].promiseList, p => {
+                                        p.resolve(window.$$allLoadFiles[url]);
+                                    });
+                                }
+                            };
+                            fileObj.onerror = function() {
+                                window.$$allLoadFiles[url].state = "error";
+                                _.each(window.$$allLoadFiles[url].promiseList, p => {
+                                    p.reject(window.$$allLoadFiles[url]);
+                                });
+                            };
+                            if (!window.$$allLoadFiles[url]) {
+                                window.$$allLoadFiles[url] = {
+                                    elem: fileObj,
+                                    state: "pending",
+                                    type: type,
+                                    src: url,
+                                    promiseList: [{ resolve: resolve, reject: reject }]
+                                };
+                                window.$$allLoadFilesArray.push(url);
+                                document.getElementsByTagName("BODY")[0].appendChild(fileObj);
+                            }
+                        }
+                    } else {
+                        window.$$allLoadFilesArray.push(url);
+                        let state = window.$$allLoadFiles[url].state;
+                        if (state == "pending") {
+                            window.$$allLoadFiles[url].promiseList.push({ resolve: resolve, reject: reject });
+                        } else if (state == "success") {
+                            resolve(window.$$allLoadFiles[url]);
+                        } else {
+                            reject(window.$$allLoadFiles[url]);
+                        }
+                    }
+                });
                 return promise;
             }
             http.importFiles.kill = function(src, mark) {
                 IDM.array.remove(window.$$allLoadFilesArray, src);
-                var result = _.filter(window.$$allLoadFilesArray, function(url) { return url == src});
+                let result = _.filter(window.$$allLoadFilesArray, url => url == src);
                 if (result.length <= 0 || mark === true) {
-                    var f = window.$$allLoadFiles[src];
+                    let f = window.$$allLoadFiles[src];
                     if (f && f.elem && f.elem.parentNode) {
                         f.elem.parentNode.removeChild(f.elem);
                     }
@@ -1162,7 +1088,7 @@
                 }
             };
             http.importFiles.has = function(src) {
-                var result = _.filter(window.$$allLoadFilesArray, function(url) { return url == src});
+                let result = _.filter(window.$$allLoadFilesArray, url => url == src);
                 return result.length > 0;
             };
         }
@@ -1178,14 +1104,14 @@
             /**
              * 获取当前登录用户信息
              */
-            getCurrentUserInfo:function(){
+            getCurrentUserInfo(){
                 return this.userObject;
             },
             /**
              * 设置当前登录用户信息
              * @param {*} object 
              */
-            setCurrentUserInfo:function(object){
+            setCurrentUserInfo(object){
                 this.userObject = object;
             }
         }
@@ -1199,14 +1125,14 @@
             /**
              * 获取应用信息
              */
-            getAppInfo:function(){
+            getAppInfo(){
                 return this.appObject;
             },
             /**
              * 设置应用信息
              * @param {*} object 
              */
-            setAppInfo:function(object){
+            setAppInfo(object){
                 this.appObject = object;
             }
         }
@@ -1219,14 +1145,14 @@
             /**
              * 获取当前登录用户信息
              */
-             getCurrentThemeInfo:function(){
+             getCurrentThemeInfo(){
                 return this.themeObject;
             },
             /**
              * 设置当前登录用户信息
              * @param {*} object 
              */
-             setCurrentThemeInfo:function(object){
+             setCurrentThemeInfo(object){
                 this.themeObject = object;
                 //给body追加class
                 $("body").addClass((IDM.setting.applications?IDM.setting.applications.themeNamePrefix:"")+(typeof object==="object"?JSON.stringify(object):object));
@@ -1259,7 +1185,7 @@
                 //文字颜色
                 shuiyin.fillStyle = option.fontColor || "#F5F5F5";
                 //文字样式
-                shuiyin.font = '400 ' + option.fontSize || '16px' + 'Microsoft JhengHei';
+                shuiyin.font = `400 ${option.fontSize || '16px'} Microsoft JhengHei`;
                 if (mainContent.endsWiths(".png") || mainContent.endsWiths(".jpg") || mainContent.endsWiths(".jpeg")) {
                     if (text1) {
                         shuiyin.fillText(text1, option.fontLeftSize || 0, (option.rotate || 0) + (option.imgSize || 16) + parseInt((option.fontSize || 16))+(option.topSize || 0));
@@ -1327,7 +1253,7 @@
                 //     childList: true,
                 // });
             },
-            addEl:function($el, type, mainContent, text1, option, canvas) {
+            addEl($el, type, mainContent, text1, option, canvas) {
                 if(!$el){
                     return;
                 }
@@ -1335,7 +1261,19 @@
                 是因为z-index对个别内容影响，才考虑的不用body */
                 var watermark = document.createElement('div')
 
-                var styleStr = '';
+                const styleStr = `
+                    position: absolute;
+                    top:0;
+                    left:0;
+                    bottom:0;
+                    right:0;
+                    height:100%;
+                    opacity:${option.opacity || 1};
+                    z-index:${type == 0 ? 0 : 9999999};
+                    pointer-events:none;
+                    background-repeat:repeat;
+                    mix-blend-mode: multiply;
+                    background-image:url('${canvas.toDataURL("image/png")}')`;
                 watermark.setAttribute('style', styleStr);
                 watermark.classList.add('idm_watermark')
                 if ($el.querySelector(".idm_watermark")) {
@@ -1349,7 +1287,7 @@
                     return;
                 }
                 /* 关闭页面的水印，即要移除水印标签 */
-                var watermark = $el.querySelector('.idm_watermark')
+                let watermark = $el.querySelector('.idm_watermark')
                 watermark&&$el.removeChild(watermark)
             }
         }
@@ -1357,17 +1295,17 @@
          * 验证公共方法
          * @returns 
          */
-        var validatorMap = {
+        let validatorMap = {
             'isExternal':{
                 name:"是否外部的资源",
-                validator:function(path){
+                validator(path){
                 return /^(https?:|mailto:|tel:)/.test(path)
                 }
             },
             'isNull': {
                 name:"是否为空",
-                validator:function(value) {
-                var v = value;
+                validator(value) {
+                let v = value;
                 if (IDM.type(v) == 'string') {
                     v = v.trim();
                 }
@@ -1386,8 +1324,8 @@
             //验证是否是一个数字
             "isNumber": {
                 name:"是否是一个数字",
-                validator:function(value, precision) {
-                var reg = null;
+                validator(value, precision) {
+                let reg = null;
                 if (precision && precision > 0) {
                     reg = new RegExp("^-?([0-9]\\d*|0(?!\\.0+$))(\\.\\d{1," + precision + "})?$", 'ig');
                 } else {
@@ -1402,7 +1340,7 @@
             //验证是否是一个字符串
             "isString": {
                 name:"是否是一个字符串",
-                validator:function(value) {
+                validator(value) {
                 if (typeof value === 'string' || value instanceof String) {
                     return true
                 }
@@ -1412,7 +1350,7 @@
             //验证是否是一个数组
             "isArray": {
                 name:"是否是一个数组",
-                validator:function(arg) {
+                validator(arg) {
                 if (typeof Array.isArray === 'undefined') {
                     return Object.prototype.toString.call(arg) === '[object Array]'
                 }
@@ -1422,7 +1360,7 @@
             //验证数字是否超出
             "isNumberOver": {
                 name:"是否超出指定数字",
-                validator:function(value, ceil) {
+                validator(value, ceil) {
                 value = parseFloat(value);
                 ceil = parseFloat(ceil);
                 if (value > ceil) {
@@ -1434,7 +1372,7 @@
             //验证数字是否小于
             "isNumberUnder":{
                 name:"是否小于指定数字",
-                validator:function(value, floor) {
+                validator(value, floor) {
                 value = parseFloat(value);
                 floor = parseFloat(floor);
                 if (value < floor) {
@@ -1446,9 +1384,9 @@
             //验证数字精度
             "precision":{
                 name:"数字精度",
-                validator:function(value, precision) {
+                validator(value, precision) {
                 value = value.toString();
-                var reg = new RegExp("^-?([0-9]\\d*|0(?!\\.0+$))(\\.\\d{1," + precision + "})?$", 'ig');
+                const reg = new RegExp("^-?([0-9]\\d*|0(?!\\.0+$))(\\.\\d{1," + precision + "})?$", 'ig');
                 if (!reg.test(value)) {
                     return false;
                 }
@@ -1457,7 +1395,7 @@
             },
             "maxLength":{
                 name:"字符串超出指定长度",
-                validator:function(value,maxlength){
+                validator(value,maxlength){
                 if(value.length>maxlength){
                     return true;
                 }
@@ -1466,7 +1404,7 @@
             },
             "minLength":{
                 name:"字符小于指定长度",
-                validator:function(value,minLength){
+                validator(value,minLength){
                 if(value.length<minLength){
                     return true;
                 }
@@ -1477,11 +1415,11 @@
             'isIDCard': {
                 name:"身份证号码",
                 type:"express",
-                validator:function(value) {
+                validator(value) {
                 //身份证正则表达式(15位)
-                var isIDCard1 = /^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}$/;
+                const isIDCard1 = /^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}$/;
                 //身份证正则表达式(18位)
-                var isIDCard2 = /^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}([0-9]|X)$/;
+                const isIDCard2 = /^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}([0-9]|X)$/;
                 if (!isIDCard1.test(value) && !isIDCard2.test(value)) {
                     return false;
                 }
@@ -1492,7 +1430,7 @@
             'isMobile': {
                 name:"手机号码",
                 type:"express",
-                validator:function(value) {
+                validator(value) {
                 var reg = /^1(3|4|5|7|8|9|6)\d{9}$/;
                 if (!reg.test(value)) {
                     return false;
@@ -1504,7 +1442,7 @@
             "isTelPhone": {
                 name:"座机号码",
                 type:"express",
-                validator:function(value) {
+                validator(value) {
                 var reg = /^(0\d{2,3}-)?\d{7,8}$/;
                 if (!reg.test(value)) {
                     return false;
@@ -1516,7 +1454,7 @@
             "isMobileOrTelPhone": {
                 name:"手机/座机号码",
                 type:"express",
-                validator:function(value) {
+                validator(value) {
                 var mobile = /^1(3|4|5|7|8|9|6)\d{9}$/;
                 var tel = /^(0\d{2}-)?\d{7,8}$/;
                 if (!mobile.test(value) && !tel.test(value)) {
@@ -1529,7 +1467,7 @@
             'isEmail': {
                 name:"电子邮箱",
                 type:"express",
-                validator:function(value) {
+                validator(value) {
                 var reg = /\w+((-w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+/;
                 if (!reg.test(value)) {
                     return false;
@@ -1540,7 +1478,7 @@
             "isPlateNumber": {
                 name:"车牌号码",
                 type:"express",
-                validator:function(value) {
+                validator(value) {
                 var reg = /(^[\u4E00-\u9FA5]{1}[A-Z0-9]{6}$)|(^[A-Z]{2}[A-Z0-9]{2}[A-Z0-9\u4E00-\u9FA5]{1}[A-Z0-9]{4}$)|(^[\u4E00-\u9FA5]{1}[A-Z0-9]{5}[挂学警军港澳]{1}$)|(^[A-Z]{2}[0-9]{5}$)|(^(08|38){1}[A-Z0-9]{4}[A-Z0-9挂学警军港澳]{1}$)/;
                 if (reg.test(value)) {
                     return false;
@@ -1550,22 +1488,22 @@
             }
         }
         var validate = function() {
-            var args = Array.prototype.slice.call(arguments, 0);
-            var validator = args[0];
-            var params = args.slice(1);
+            let args = Array.prototype.slice.call(arguments, 0);
+            let validator = args[0];
+            let params = args.slice(1);
             return validatorMap[validator].validator.apply(this, params);
         }
         validate.map = validatorMap;
         return {
-            util: util,
-            url:url,
-            http:http,
-            style: style,
-            user:user,
-            app:app,
-            theme:theme,
-            watermark:watermark,
-            validate:validate
+            util,
+            url,
+            http,
+            user,
+            app,
+            theme,
+            watermark,
+            validate,
+            style
         }
     }
     /**
@@ -1578,7 +1516,7 @@
          */
         var msgEleStyle=document.createElement("style");
         msgEleStyle.setAttribute("from","IDM-Message-Style-Code");
-        msgEleStyle.innerHTML='';
+        msgEleStyle.innerHTML=`.IDM-Message.IDM-Message-wrapper{box-sizing:border-box;margin:0;padding:0;color:rgba(0,0,0,.55);font-size:13px;font-variant:tabular-nums;line-height:1;list-style:none;font-feature-settings:"tnum";position:fixed;top:16px;left:0;z-index:1010;width:100%;pointer-events:none;}.IDM-Message .IDM-Message-item{padding:8px;text-align:center;-webkit-animation-duration:.3s;animation-duration:.3s;position:relative;}.IDM-Message .IDM-Message-item .IDM-Message-count{text-align:center;position:absolute;left:-4px;top:-4px;background-color:red;color:#fff;font-size:12px;line-height:16px;border-radius:2px;display:inline-block;min-width:16px;height:16px;-webkit-animation-duration:.3s;animation-duration:.3s;border-radius:4px;}.IDM-Message .IDM-Message-item:first-child{margin-top:-8px;}.IDM-Message .IDM-Message-content{text-align:left;position:relative;display:inline-block;padding:10px 16px;background:#fff;border-radius:4px;box-shadow:0 4px 12px rgba(0,0,0,.15);pointer-events:all;max-width:80%;min-width:80px;}.IDM-Message .IDM-Message-content [class^="IDM-Message-content-"]{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:21px;line-height:21px;}.IDM-Message .IDM-Message-content .IDM-Message-content-with-close{padding-right:20px;}.IDM-Message .IDM-Message-icon{display:inline-block;color:inherit;font-style:normal;line-height:0;text-align:center;text-transform:none;vertical-align:-.125em;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;position:relative;top:1px;margin-right:8px;font-size:16px;}.IDM-Message .IDM-Message-icon svg{display:inline-block;}.IDM-Message .IDM-Message-content-info .IDM-Message-icon{color:#1890ff;user-select:none;}.IDM-Message .IDM-Message-content-success .IDM-Message-icon{color:#52c41a;}.IDM-Message .IDM-Message-content-error .IDM-Message-icon{color:#f5222d;}.IDM-Message .IDM-Message-content-warning .IDM-Message-icon{color:#faad14;}.IDM-Message .IDM-Message-icon-close{position:absolute;top:12px;right:5px;padding:0;overflow:hidden;font-size:12px;line-height:22px;background-color:transparent;border:none;outline:none;cursor:pointer;color:rgba(0,0,0,.45);transition:color .3s}.IDM-Message .IDM-Message-icon-close:hover>svg path{stroke:#555;}.IDM-Message .animate-turn{animation:IDMMessageTurn 1s linear infinite;-webkit-animation:IDMMessageTurn 1s linear infinite;}@keyframes IDMMessageTurn{0%{-webkit-transform:rotate(0deg);}25%{-webkit-transform:rotate(90deg);}50%{-webkit-transform:rotate(180deg);}75%{-webkit-transform:rotate(270deg);}100%{-webkit-transform:rotate(360deg);}}@-webkit-keyframes IDMMessageTurn{0%{-webkit-transform:rotate(0deg);}25%{-webkit-transform:rotate(90deg);}50%{-webkit-transform:rotate(180deg);}75%{-webkit-transform:rotate(270deg);}100%{-webkit-transform:rotate(360deg);}}@-webkit-keyframes IDMMessageMoveOut{0%{max-height:150px;padding:8px;opacity:1}to{max-height:0;padding:0;opacity:0}}@keyframes IDMMessageMoveOut{0%{max-height:150px;padding:8px;opacity:1}to{max-height:0;padding:0;opacity:0}}@-webkit-keyframes IDMMessageMoveIn{0%{transform:translateY(-100%);transform-origin:0 0;opacity:0}to{transform:translateY(0);transform-origin:0 0;opacity:1}}@keyframes IDMMessageMoveIn{0%{transform:translateY(-100%);transform-origin:0 0;opacity:0}to{transform:translateY(0);transform-origin:0 0;opacity:1}}@-webkit-keyframes IDMMessageShake{0%,100%{transform:translateX(0px);opacity:1;}25%,75%{transform:translateX(-4px);opacity:0.75;}50%{transform:translateX(4px);opacity:0.25;}}@keyframes IDMMessageShake{0%,100%{transform:translateX(0px);opacity:1;}25%,75%{transform:translateX(-4px);opacity:0.75;}50%{transform:translateX(4px);opacity:0.25;}}`;
         document.getElementsByTagName('head')[0].appendChild(msgEleStyle)
 
         /**
@@ -1914,7 +1852,7 @@
     //增加string的trim函数
     if (typeof String.prototype.trim != "function") {
         String.prototype.trim=function(){
-        var emptyBlockReg = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
+        let emptyBlockReg = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
         return this.replace(emptyBlockReg,'');
         }
     }
@@ -2186,7 +2124,7 @@
 
 
     var reg = /\@\[([^@]+)\]/ig;
-    // var reg2 = /(\w+)(\[\d+\])/ig;
+    // let reg2 = /(\w+)(\[\d+\])/ig;
     function findData(key, data) {
         data = data || this.variable;
         if (data[key] != undefined) {
@@ -3953,10 +3891,10 @@
         theme:idmFun().theme,
         watermark:idmFun().watermark,
         validate:idmFun().validate,
-        message:idmMessage(),
         style: idmFun().style,
-        express: express,
-        layer:layer
+        message:idmMessage(),
+        express,
+        layer
     }
     IDM.layer.run();
 })();

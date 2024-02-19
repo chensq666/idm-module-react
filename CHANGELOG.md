@@ -1,3 +1,5 @@
+### 2024-02-19
+- 更新idm.core.js
 ### 2024-01-17
 - ci:修改打包后目录名配置 build -> dist，适配idm zip脚本
 - ci:增加自动打包脚本 -> npm run dist
