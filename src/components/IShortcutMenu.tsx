@@ -94,6 +94,8 @@ class IShortcutMenu extends Component<IDMCommonProp, IState> {
                         fontObj['height'] = element + 'px'
                         break
                     case 'iconSize':
+                        iconSizeObj['width'] = element * this.getUserFontSizeRatio() + 'px'
+                        iconSizeObj['height'] = element * this.getUserFontSizeRatio() + 'px'
                         iconSizeObj['font-size'] = element * this.getUserFontSizeRatio() + 'px'
                         break
                     case 'font':
@@ -157,6 +159,7 @@ class IShortcutMenu extends Component<IDMCommonProp, IState> {
     // 加载css
     loadIconFile() {
         const iconfontUrl = this.state.propData.iconfontUrl
+        const iconType = this.state.propData.iconType
         if (iconfontUrl) {
             let baseUrl =
                 iconfontUrl + (iconfontUrl.substring(iconfontUrl.length - 1, iconfontUrl.length) === '/' ? '' : '/')
@@ -166,12 +169,23 @@ class IShortcutMenu extends Component<IDMCommonProp, IState> {
                     if (!res.data) {
                         return
                     }
+                    if(iconType === undefined || iconType === 'icon'){
                     //存在，加载css
-                    window.IDM.module.loadCss(window.IDM.url.getWebPath(baseUrl + 'iconfont.css'), true)
+                     window.IDM.module.loadCss(window.IDM.url.getWebPath(baseUrl + 'iconfont.css'), true)
+                    }else if (iconType === 'svg') {
+                        IDM.module.loadJs(IDM.url.getWebPath(baseUrl + 'iconfont.js'), false, function(){})
+                    }
                 })
                 .catch(function (error) {
                     console.log(error)
                 })
+        }else {
+            if(iconType === 'svg'){
+                IDM.module.loadJs(IDM.url.getModuleAssetsWebPath(
+                    '../../menu-icon/iconfont.js',
+                    this.state
+                ), false, function(){})
+            }
         }
     }
     // 批量生成css类名
@@ -368,7 +382,7 @@ class IShortcutMenu extends Component<IDMCommonProp, IState> {
             case 'dataSource':
                 if(this.state.propData?.dataSource?.[0]?.id) {
                     IDM.datasource.request(this.state.propData.dataSource[0].id, {
-                        moduleObject: this.state.moduleObject,
+                        moduleObject: this.state,
                         param: {}
                     }).then(res => {
                         if(!res || res.length === 0) {
@@ -411,7 +425,7 @@ class IShortcutMenu extends Component<IDMCommonProp, IState> {
                             window[funcName].call(this, {
                                 ...params,
                                 ...this.state.propData.customFunction[0].param,
-                                moduleObject: this.state.moduleObject
+                                moduleObject: this.state
                             })
                         this.setState(
                             {
@@ -533,7 +547,7 @@ class IShortcutMenu extends Component<IDMCommonProp, IState> {
         this.initData()
     }
 
-    handleIconClassName(el) {
+    handleIconClassName(el, hasFamily = true) {
         if(el.onlyShowPlaceholder) return ''
         // 自定义
         const isCustom = this.state.propData.iconfontUrl ? true : false
@@ -541,12 +555,15 @@ class IShortcutMenu extends Component<IDMCommonProp, IState> {
         let fontFamily = isCustom && this.state.propData.iconFontFamily ? this.state.propData.iconFontFamily : ''
         // 取自定义前缀 默认icon-
         let prefix = isCustom && this.state.propData.iconPrefix ? this.state.propData.iconPrefix : ''
-        let familyStr = `${fontFamily} ${prefix}`
+        let familyStr = hasFamily ? `${fontFamily} ${prefix}` : prefix
         if (isCustom && el.icon) {
             return familyStr + el.icon
         }
+        fontFamily = 'oa-menu-iconfont'
+        prefix = 'oa-menu-'
+        familyStr = hasFamily ? `${fontFamily} ${prefix}` : prefix
         // 没有icon 不是自定义图标库 使用本地自带图标库
-        return 'oa-menu-iconfont oa-menu-tuceng'
+        return familyStr +'tuceng'
     }
 
     handleClickItem(item) {
@@ -602,7 +619,7 @@ class IShortcutMenu extends Component<IDMCommonProp, IState> {
     }
     // 这是item maker
     setItemMarker(isMarker, el, number) {
-        if (isMarker) {
+        if (isMarker && this.state.propData.isShowBadge) {
             this.setMarker(el.id, number)
         } else {
             this.setMarker(el.id, '', 'hide')
@@ -645,7 +662,18 @@ class IShortcutMenu extends Component<IDMCommonProp, IState> {
     render() {
         const { handleMouseEnter, handleMouseLeave } = this
         const { id } = this.props
-        const { pageShortcutList, moduleHeight, propData, moduleObject } = this.state
+        const { pageShortcutList, moduleHeight, propData } = this.state
+        const creteIconContent = (el) => { 
+            let iconContent =  <i className={`idm-shortcut-menu-icon ${this.handleIconClassName(el)}`}></i>
+            if(propData.iconType === 'image'){
+                const url = IDM.url.getWebPath(el[propData.imageField])
+                iconContent = <img className='idm-shortcut-menu-icon' style={{objectFit: 'contain'}} src={url} alt="" />
+            }else if (propData.iconType === 'svg'){
+                iconContent = <svg className='idm-shortcut-menu-icon' aria-hidden="true"><use xlinkHref={`#${this.handleIconClassName(el, false)}`}></use></svg>
+            }
+            return  iconContent
+         }
+
         return (
             <>
                 <div id={id} idm-ctrl='idm_module' className='idm-shortcut-menu' idm-ctrl-id={id}>
@@ -657,7 +685,8 @@ class IShortcutMenu extends Component<IDMCommonProp, IState> {
                     >
                         {pageShortcutList.length > 0 &&  pageShortcutList[0].map((el) => (
                             <div className={el.onlyShowPlaceholder ? 'no-hover idm-shortcut-menu-box' : 'idm-shortcut-menu-box'} key={el.id} onClick={() => this.handleClickItem(el)}>
-                                <i className={`idm-shortcut-menu-icon ${this.handleIconClassName(el)}`}></i>
+                                {/* <i className={`idm-shortcut-menu-icon ${this.handleIconClassName(el)}`}></i> */}
+                                {creteIconContent(el)}
                                 <div className='idm-shortcut-menu-text' title={el.name}>
                                     {el.name}
                                 </div>
@@ -690,9 +719,10 @@ class IShortcutMenu extends Component<IDMCommonProp, IState> {
                                             key={item.id}
                                             onClick={() => this.handleClickItem(item)}
                                         >
-                                            <i
+                                            {/* <i
                                                 className={`idm-shortcut-menu-icon ${this.handleIconClassName(item)}`}
-                                            ></i>
+                                            ></i> */}
+                                            {creteIconContent(item)}
                                             <div className='idm-shortcut-menu-text' title={item.name}>
                                                 {item.name}
                                             </div>
@@ -716,7 +746,7 @@ class IShortcutMenu extends Component<IDMCommonProp, IState> {
                     iconFontFamily={propData.iconFontFamily}
                     commonFunctionShow={this.state.commonFunctionShow}
                     propData={propData}
-                    moduleObject={moduleObject}
+                    moduleObject={this.state}
                     handleCommonFunctionClose={() => this.handleCommonFunctionClose()}
                 ></CommonFunction>
             </>

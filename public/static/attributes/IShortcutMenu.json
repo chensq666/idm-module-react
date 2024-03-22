@@ -57,6 +57,37 @@
                     ]
                 },
                 {
+                    "type": "select",
+                    "layoutType": "inline",
+                    "text": "底部内容",
+                    "bindKey": "iconType",
+                    "default": "icon",
+                    "dictionary": [
+                        {
+                            "label": "图标",
+                            "value": "icon"
+                        },
+                        {
+                            "label": "图片",
+                            "value": "image"
+                        },
+                        {
+                            "label": "svg",
+                            "value": "svg"
+                        }
+                    ]
+                },
+                {
+                    "type": "input",
+                    "layoutType": "inline",
+                    "text": "图片字段",
+                    "bindKey": "imageField",
+                    "desc": "设置显示图标的数据字段",
+                    "display": "@[iconType == 'image']",
+                    "placeholder": "请输入",
+                    "default": "image"
+                },
+                {
                     "type": "input",
                     "layoutType": "inline",
                     "text": "图标URL",
